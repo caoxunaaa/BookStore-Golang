@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "user";
+
+message Request{
+  int64 ping = 1;
+}
+
+message Reply{
+  bool ok = 1;
+  string code = 2;
+}
+
+message IdReq{
+  int64 id = 1;
+}
+
+message UserInfoReply{
+  int64 id = 1;
+  string username = 2;
+  string password = 3;
+  string nickname = 4;
+  string phone = 5;
+  string email = 6;
+}
+
+message UsersInfoReply{
+  repeated UserInfoReply usersInfo = 1;
+}
+
+message RegisterReq{
+  string username = 1;
+  string password = 2;
+  string nickname = 3;
+  string phone = 4;
+  string email = 5;
+  string repeatPassword = 6;
+}
+
+message LoginReq{
+  string username = 1;
+  string phone = 2;
+  string email = 3;
+  string password = 4;
+}
+
+message UpdateUserReq{
+  int64 id = 1;
+  string username = 2;
+  string password = 3;
+  string nickname = 4;
+  string phone = 5;
+  string email = 6;
+}
+
+service User {
+  rpc findOneUserById(IdReq) returns(UserInfoReply);
+  rpc findAllUser(Request) returns(UsersInfoReply);
+
+  rpc Register(RegisterReq) returns(Reply);
+  rpc Login(LoginReq) returns(Reply);
+
+  rpc UpdateUser(UpdateUserReq) returns(Reply);
+}
