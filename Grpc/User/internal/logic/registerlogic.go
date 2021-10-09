@@ -45,6 +45,7 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.Reply, error) {
 	_, err = l.svcCtx.Model.Insert(model.UserInfo{
 		Username: in.Username,
 		Password: in.Password,
+		Nickname: in.Nickname,
 		Email:    in.Email,
 		Phone:    in.Phone})
 	if err != nil {

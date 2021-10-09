@@ -35,6 +35,7 @@ func (l *UpdateUserLogic) UpdateUser(in *user.UpdateUserReq) (*user.Reply, error
 		Id:       in.Id,
 		Username: in.Username,
 		Password: in.Password,
+		Nickname: in.Nickname,
 		Email:    in.Email,
 		Phone:    in.Phone})
 	if err != nil {

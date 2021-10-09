@@ -33,6 +33,8 @@ func (l *LoginLogic) Login(in *user.LoginReq) (*user.Reply, error) {
 		rep, err = l.svcCtx.Model.FindOneByEmail(in.Email)
 	} else if in.Phone != "" {
 		rep, err = l.svcCtx.Model.FindOneByPhone(in.Phone)
+	} else {
+		return &user.Reply{Ok: false, Code: "login fail"}, nil
 	}
 	if err != nil {
 		return nil, err
@@ -40,5 +42,5 @@ func (l *LoginLogic) Login(in *user.LoginReq) (*user.Reply, error) {
 	if rep.Password == in.Password {
 		return &user.Reply{Ok: true, Code: "login success"}, nil
 	}
-	return &user.Reply{Ok: false, Code: "login fail"}, nil
+	return &user.Reply{Ok: false, Code: "password error"}, nil
 }
