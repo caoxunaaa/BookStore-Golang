@@ -17,6 +17,10 @@ message IdReq{
   int64 id = 1;
 }
 
+message UsernameReq{
+  string username = 1;
+}
+
 message UserInfoReply{
   int64 id = 1;
   string username = 2;
@@ -40,9 +44,9 @@ message RegisterReq{
 }
 
 message LoginReq{
-  string username = 1;
-  string phone = 2;
-  string email = 3;
+  string username= 1;
+  string email = 2;
+  string phone = 3;
   string password = 4;
 }
 
@@ -56,11 +60,12 @@ message UpdateUserReq{
 }
 
 service User {
-  rpc findOneUserById(IdReq) returns(UserInfoReply);
-  rpc findAllUser(Request) returns(UsersInfoReply);
+  rpc FindOneUserById(IdReq) returns(UserInfoReply);
+  rpc FindOneUserByUsername(UsernameReq) returns(UserInfoReply);
+  rpc FindAllUser(Request) returns(UsersInfoReply);
 
   rpc Register(RegisterReq) returns(Reply);
-  rpc Login(LoginReq) returns(Reply);
+  rpc Login(LoginReq) returns(UserInfoReply);
 
   rpc UpdateUser(UpdateUserReq) returns(Reply);
 }

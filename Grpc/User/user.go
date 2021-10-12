@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 
@@ -29,8 +28,6 @@ func main() {
 		user.RegisterUserServer(grpcServer, srv)
 	})
 	defer s.Stop()
-
-	fmt.Println(srv.FindAllUser(context.Background(), &user.Request{}))
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()
 }

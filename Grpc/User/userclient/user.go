@@ -12,20 +12,22 @@ import (
 )
 
 type (
-	UsersInfoReply = user.UsersInfoReply
+	IdReq          = user.IdReq
+	UsernameReq    = user.UsernameReq
 	RegisterReq    = user.RegisterReq
 	LoginReq       = user.LoginReq
-	UpdateUserReq  = user.UpdateUserReq
 	Request        = user.Request
-	Reply          = user.Reply
-	IdReq          = user.IdReq
 	UserInfoReply  = user.UserInfoReply
+	UsersInfoReply = user.UsersInfoReply
+	UpdateUserReq  = user.UpdateUserReq
+	Reply          = user.Reply
 
 	User interface {
 		FindOneUserById(ctx context.Context, in *IdReq) (*UserInfoReply, error)
+		FindOneUserByUsername(ctx context.Context, in *UsernameReq) (*UserInfoReply, error)
 		FindAllUser(ctx context.Context, in *Request) (*UsersInfoReply, error)
 		Register(ctx context.Context, in *RegisterReq) (*Reply, error)
-		Login(ctx context.Context, in *LoginReq) (*Reply, error)
+		Login(ctx context.Context, in *LoginReq) (*UserInfoReply, error)
 		UpdateUser(ctx context.Context, in *UpdateUserReq) (*Reply, error)
 	}
 
@@ -45,6 +47,11 @@ func (m *defaultUser) FindOneUserById(ctx context.Context, in *IdReq) (*UserInfo
 	return client.FindOneUserById(ctx, in)
 }
 
+func (m *defaultUser) FindOneUserByUsername(ctx context.Context, in *UsernameReq) (*UserInfoReply, error) {
+	client := user.NewUserClient(m.cli.Conn())
+	return client.FindOneUserByUsername(ctx, in)
+}
+
 func (m *defaultUser) FindAllUser(ctx context.Context, in *Request) (*UsersInfoReply, error) {
 	client := user.NewUserClient(m.cli.Conn())
 	return client.FindAllUser(ctx, in)
@@ -55,7 +62,7 @@ func (m *defaultUser) Register(ctx context.Context, in *RegisterReq) (*Reply, er
 	return client.Register(ctx, in)
 }
 
-func (m *defaultUser) Login(ctx context.Context, in *LoginReq) (*Reply, error) {
+func (m *defaultUser) Login(ctx context.Context, in *LoginReq) (*UserInfoReply, error) {
 	client := user.NewUserClient(m.cli.Conn())
 	return client.Login(ctx, in)
 }

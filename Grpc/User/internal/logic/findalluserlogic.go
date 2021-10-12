@@ -33,7 +33,7 @@ func (l *FindAllUserLogic) FindAllUser(in *user.Request) (*user.UsersInfoReply, 
 		res.UsersInfo = append(res.UsersInfo, &user.UserInfoReply{
 			Id:       tmp[i].Id,
 			Username: tmp[i].Username,
-			Password: tmp[i].Password,
+			//Password: tmp[i].Password,
 			Nickname: tmp[i].Nickname,
 			Phone:    tmp[i].Phone,
 			Email:    tmp[i].Email,

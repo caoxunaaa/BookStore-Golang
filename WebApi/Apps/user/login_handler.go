@@ -1,10 +1,10 @@
 package user
 
 import (
-	"WebApi/Middlewares"
 	"WebApi/Pb/user"
 	"WebApi/Services"
 	"context"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -17,27 +17,27 @@ func LoginHandler(c *gin.Context) {
 	password := c.DefaultPostForm("password", "")
 	email := c.DefaultPostForm("email", "")
 	phone := c.DefaultPostForm("phone", "")
-
+	fmt.Println("123")
+	fmt.Println(username, email, phone, password)
 	ctx := context.Background()
 	rep, err := Services.UserGrpc.Login(ctx, &user.LoginReq{
 		Username: username,
 		Password: password,
 		Email:    email,
 		Phone:    phone})
-
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	} else {
-		if rep.Ok == false {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": rep.Code})
+		if rep.Username == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "没有找到用户，请先注册"})
 			return
 		}
 	}
 
 	now := time.Now().Unix()
-	accessExpire := int64(60 * 60 * 24) // second
-	jwtToken, err := getJwtToken(Middlewares.Secret, strconv.FormatInt(now, 10), strconv.FormatInt(accessExpire, 10), username)
+
+	jwtToken, err := getJwtToken(Services.C.Jwt.Secret, strconv.FormatInt(now, 10), strconv.FormatInt(Services.C.Jwt.Expire, 10), rep.Username)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -45,14 +45,16 @@ func LoginHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, struct {
 		Name         string
+		NickName     string
 		AccessToken  string
 		AccessExpire int64
 		RefreshAfter int64
 	}{
-		Name:         username,
+		Name:         rep.Username,
+		NickName:     rep.Nickname,
 		AccessToken:  jwtToken,
-		AccessExpire: now + accessExpire,
-		RefreshAfter: now + accessExpire/2})
+		AccessExpire: now + Services.C.Jwt.Expire,
+		RefreshAfter: now + Services.C.Jwt.Expire/2})
 }
 
 func getJwtToken(secretKey string, iat, seconds, userName string) (string, error) {

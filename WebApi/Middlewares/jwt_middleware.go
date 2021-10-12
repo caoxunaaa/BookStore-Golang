@@ -1,14 +1,13 @@
 package Middlewares
 
 import (
+	"WebApi/Services"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
-
-var Secret = "Superxon"
 
 // JWTAuthMiddleware 基于JWT的认证中间件--验证用户是否登录
 func JWTAuthMiddleware() func(c *gin.Context) {
@@ -32,7 +31,7 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		mc, ok := ParseToken(authHeader, Secret)
+		mc, ok := ParseToken(authHeader, Services.C.Jwt.Secret)
 		if ok == false {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": 2005,
@@ -63,26 +62,23 @@ func JWTSuperuserMiddleware() func(c *gin.Context) {
 		parts := strings.Split(authHeader, ".")
 		if len(parts) != 3 {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": 2004,
 				"msg":  "请求头中auth格式有误",
 			})
 			c.Abort()
 			return
 		}
-		mc, ok := ParseToken(authHeader, Secret)
+		mc, ok := ParseToken(authHeader, Services.C.Jwt.Secret)
 		fmt.Println(mc)
 		if ok == false {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": 2005,
 				"msg":  "无效的Token",
 			})
 			c.Abort()
 			return
 		}
 		m := mc.(jwt.MapClaims)
-		if m["username"] != "管理员" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": 2006,
+		if m["username"] != "bookstoreboss" {
+			c.JSON(http.StatusForbidden, gin.H{
 				"msg":  "非超级用户",
 			})
 			c.Abort()
