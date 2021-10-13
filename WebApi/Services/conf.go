@@ -8,17 +8,22 @@ import (
 var C *Config
 
 type Config struct {
-	HostConfig
-	Jwt JwtConfig `yaml:"jwt"`
+	Host    HostConfig    `yaml:"Host"`
+	Jwt     JwtConfig     `yaml:"Jwt"`
+	UserRpc UserRpcConfig `yaml:"UserRpc"`
 }
 
 type HostConfig struct {
 	ListenOn string `yaml:"ListenOn"`
 }
 
+type UserRpcConfig struct {
+	Host string `yaml:"Host"`
+}
+
 type JwtConfig struct {
-	Secret string `yaml:"secret"`
-	Expire int64  `yaml:"expire"`
+	Secret string `yaml:"Secret"`
+	Expire int64  `yaml:"Expire"`
 }
 
 func ConfigInit(path string) error {

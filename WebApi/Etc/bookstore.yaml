@@ -1,4 +1,7 @@
-ListenOn: 0.0.0.0:8002
-jwt:
-  secret: Superxon
-  expire: 86400
+Host:
+  ListenOn: 0.0.0.0:8002
+UserRpc:
+  Host: 172.20.3.111:8080
+Jwt:
+  Secret: Superxon
+  Expire: 86400
