@@ -1,3 +1,4 @@
+ListenOn: 0.0.0.0:8002
 jwt:
   secret: Superxon
   expire: 86400

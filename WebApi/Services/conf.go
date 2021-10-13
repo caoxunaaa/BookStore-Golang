@@ -8,31 +8,34 @@ import (
 var C *Config
 
 type Config struct {
+	HostConfig
 	Jwt JwtConfig `yaml:"jwt"`
+}
+
+type HostConfig struct {
+	ListenOn string `yaml:"ListenOn"`
 }
 
 type JwtConfig struct {
 	Secret string `yaml:"secret"`
-	Expire int64 `yaml:"expire"`
+	Expire int64  `yaml:"expire"`
 }
 
-func ConfigInit(path string) error{
+func ConfigInit(path string) error {
 	var err error
 	C, err = ReadYamlConfig(path)
 	return err
 }
 
-func ReadYamlConfig(path string)  (*Config,error){
+func ReadYamlConfig(path string) (*Config, error) {
 	conf := &Config{}
 	if f, err := os.Open(path); err != nil {
-		return nil,err
+		return nil, err
 	} else {
 		err := yaml.NewDecoder(f).Decode(conf)
-		if err !=nil{
+		if err != nil {
 			return nil, err
 		}
 	}
-	return  conf,nil
+	return conf, nil
 }
-
-

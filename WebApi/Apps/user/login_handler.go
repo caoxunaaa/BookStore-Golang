@@ -4,7 +4,6 @@ import (
 	"WebApi/Pb/user"
 	"WebApi/Services"
 	"context"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,7 +17,6 @@ func LoginHandler(c *gin.Context) {
 	email := c.DefaultPostForm("email", "")
 	phone := c.DefaultPostForm("phone", "")
 
-	fmt.Println(username, email, phone, password)
 	ctx := context.Background()
 	rep, err := Services.UserGrpc.Login(ctx, &user.LoginReq{
 		Username: username,
