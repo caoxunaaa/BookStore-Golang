@@ -1,17 +1,29 @@
 <template>
-  <div id="login" style="">
+  <div id="register" style="">
     <el-row :gutter="20">
       <el-col :span="8" :offset="8">
         <div class="grid-content bg-purple">
           <el-form ref="form" :model="form" label-width="140px">
-            <el-form-item label="用户名或邮箱或电话">
+            <el-form-item label="用户名">
               <el-input le v-model="form.username"></el-input>
             </el-form-item>
             <el-form-item label="密码">
               <el-input v-model="form.password"></el-input>
             </el-form-item>
+            <el-form-item label="确认密码">
+              <el-input v-model="form.pwAgain"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱">
+              <el-input v-model="form.email"></el-input>
+            </el-form-item>
+            <el-form-item label="电话">
+              <el-input v-model="form.phone"></el-input>
+            </el-form-item>
+            <el-form-item label="昵称">
+              <el-input v-model="form.nickname"></el-input>
+            </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit('form')">登录</el-button>
+              <el-button type="primary" @click="onSubmit('form')">注册</el-button>
               <el-button>取消</el-button>
             </el-form-item>
           </el-form>
@@ -23,12 +35,16 @@
 
 <script>
 export default {
-  name: 'Login',
+  name: 'Register',
   data () {
     return {
       form: {
         username: '',
-        password: ''
+        password: '',
+        pwAgain: '',
+        email: '',
+        phone: '',
+        nickname: ''
       }
     }
   },
@@ -39,38 +55,28 @@ export default {
       this.$refs[form].validate((valid) => {
         if (valid) {
           let that = this
-          let username = ''
-          let email = ''
-          let phone = ''
-          if (/^1\d{10}$/.test(that.form['username'])) {
-            phone = that.form['username']
-          } else if (/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/.test(that.form['username'])) {
-            email = that.form['username']
-          } else {
-            username = that.form['username']
+          if (that.form.password !== that.form.pwAgain) {
+            alert('两次密码输入不一致')
+            return false
           }
-
           let formData = new FormData()
-          formData.append('username', username)
-          formData.append('email', email)
-          formData.append('phone', phone)
+          formData.append('username', that.form['username'])
+          formData.append('email', that.form['email'])
+          formData.append('phone', that.form['phone'])
           formData.append('password', that.form['password'])
+          formData.append('pwAgain', that.form['pwAgain'])
+          formData.append('nickname', that.form['nickname'])
 
           that.$axios({
             method: 'post',
-            url: '/api/user/login',
+            url: '/api/user/register',
             data: formData
           }).then(function (response) {
             const res = response.data
+            this.$message('注册成功')
             console.log(res)
-            localStorage.setItem('Token', res['AccessToken'])
-            localStorage.setItem('Username', res['Name'])
-            localStorage.setItem('Nickname', res['NickName'])
-            that.$message({message: '登录成功', duration: 1000})
-            setTimeout(function () {
-              that.$router.push({path: '/'})
-              window.location.reload()
-            }, 1000)
+            that.$router.push({path: '/user/login'})
+            window.location.reload()
           }).catch(function (error) {
             console.log(error)
             alert('用户不存在')

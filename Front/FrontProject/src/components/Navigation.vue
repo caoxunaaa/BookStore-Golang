@@ -25,9 +25,8 @@
       <el-menu-item index="3" disabled>消息中心</el-menu-item>
       <div style="float: right" v-if="logged">
         <el-submenu index="4">
-        <template slot="title" >{{username}}</template>
-        <el-menu-item index="4-1">更改密码</el-menu-item>
-        <el-menu-item index="4-2" @click="logout">退出登录</el-menu-item>
+        <template slot="title" >{{nickname}}</template>
+        <el-menu-item index="4-1" @click="logout">退出登录</el-menu-item>
       </el-submenu>
       </div>
       <div v-else>
@@ -45,40 +44,27 @@ export default {
     return {
       activeIndex: '1',
       logged: false,
-      username: '',
+      nickname: '',
       timer: ''
     }
   },
   mounted () {
-    this.getuser()
+    this.getUser()
   },
   methods: {
     handleSelect (key, keyPath) {
       this.activeIndex = key
     },
-    getuser () {
+    getUser () {
       let that = this
-      that.logged = localStorage.getItem('Token') !== null
+      that.logged = localStorage.getItem('Username') !== null
       if (that.logged === true) {
-        that.username = localStorage.getItem('nickname')
+        that.nickname = localStorage.getItem('Nickname')
       }
     },
     logout () {
-      let that = this
-      that.$axios({
-        method: 'get',
-        url: '/handle/users/user_logout/'
-      }).then(function (response) {
-        const res = response.data
-        if (res['status'] === 'success') {
-          localStorage.clear()
-          that.getuser()
-          that.$router.push({path: '/'})
-          window.location.reload()
-        }
-      }).catch(function (error) {
-        console.log(error)
-      })
+      localStorage.clear()
+      this.logged = false
     }
   }
 }
