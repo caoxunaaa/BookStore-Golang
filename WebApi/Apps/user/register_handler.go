@@ -16,7 +16,7 @@ func RegisterHandler(c *gin.Context) {
 	email := c.DefaultPostForm("email", "")
 	phone := c.DefaultPostForm("phone", "")
 
-	rep, err := Services.UserGrpc.Register(context.Background(), &user.RegisterReq{
+	rep, err := Services.Grpc.UserGrpc.Register(context.Background(), &user.RegisterReq{
 		Username:       username,
 		Password:       password,
 		Nickname:       nickname,

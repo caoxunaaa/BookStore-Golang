@@ -1,17 +1,31 @@
 package Services
 
 import (
+	"WebApi/Pb/book"
 	"WebApi/Pb/user"
 	"google.golang.org/grpc"
 )
 
-var UserGrpc user.UserClient
+var Grpc *GrpcContext
 
-func GrpcInit() error {
+type GrpcContext struct {
+	UserGrpc user.UserClient
+	BookGrpc book.BookClient
+}
+
+func GrpcInit() *GrpcContext {
+	var g GrpcContext
 	conn, err := grpc.Dial(C.UserRpc.Host, grpc.WithInsecure())
 	if err != nil {
-		return err
+		return nil
 	}
-	UserGrpc = user.NewUserClient(conn)
-	return nil
+	g.UserGrpc = user.NewUserClient(conn)
+
+	conn, err = grpc.Dial(C.BookRpc.Host, grpc.WithInsecure())
+	if err != nil {
+		return nil
+	}
+	g.BookGrpc = book.NewBookClient(conn)
+
+	return &g
 }

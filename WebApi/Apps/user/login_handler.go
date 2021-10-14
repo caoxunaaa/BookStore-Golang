@@ -18,7 +18,7 @@ func LoginHandler(c *gin.Context) {
 	phone := c.DefaultPostForm("phone", "")
 
 	ctx := context.Background()
-	rep, err := Services.UserGrpc.Login(ctx, &user.LoginReq{
+	rep, err := Services.Grpc.UserGrpc.Login(ctx, &user.LoginReq{
 		Username: username,
 		Password: password,
 		Email:    email,

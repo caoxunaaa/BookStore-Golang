@@ -9,7 +9,7 @@ import (
 )
 
 func GetAllUsersHandler(c *gin.Context) {
-	rep, err := Services.UserGrpc.FindAllUser(context.Background(), &user.Request{})
+	rep, err := Services.Grpc.UserGrpc.FindAllUser(context.Background(), &user.Request{})
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
