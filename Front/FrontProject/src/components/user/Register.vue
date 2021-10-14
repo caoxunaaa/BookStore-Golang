@@ -8,10 +8,10 @@
               <el-input le v-model="form.username"></el-input>
             </el-form-item>
             <el-form-item label="密码">
-              <el-input v-model="form.password"></el-input>
+              <el-input v-model="form.password" show-password></el-input>
             </el-form-item>
             <el-form-item label="确认密码">
-              <el-input v-model="form.pwAgain"></el-input>
+              <el-input v-model="form.pwAgain" show-password></el-input>
             </el-form-item>
             <el-form-item label="邮箱">
               <el-input v-model="form.email"></el-input>

@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package book;
+
+option go_package = "book";
+
+message Request{
+  int64 ping = 1;
+  int64 year = 2;
+  int64 month = 3;
+}
+
+message Reply{
+  bool ok = 1;
+  string message = 2;
+}
+
+message UsernameReq{
+  string username = 1;
+}
+
+message BookBasicInfoReply{
+  int64 id = 1;
+  string name = 2;
+  string author = 3;
+  string image = 4;
+  string storage_time = 5;
+}
+
+message BooksBasicInfoReply{
+  repeated BookBasicInfoReply booksBasicInfo = 1;
+}
+
+message BookBasicInfoReq{
+  int64 id = 1;
+  string name = 2;
+  string author = 3;
+  string image = 4;
+  string storage_time = 5;
+}
+
+service Book {
+  rpc FindAllBooksSortedByMonth(Request) returns(BooksBasicInfoReply);
+  rpc FindAllBooks(Request) returns(BooksBasicInfoReply);
+  rpc FindBooksByLikeName(BookBasicInfoReq) returns(BooksBasicInfoReply);
+
+  rpc FindOneBookById(BookBasicInfoReq) returns(BookBasicInfoReply);
+
+  rpc CreateBook(BookBasicInfoReq) returns(Reply);
+  rpc DeleteBook(BookBasicInfoReq) returns(Reply);
+  rpc UpdateUser(BookBasicInfoReq) returns(Reply);
+}
