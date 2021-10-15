@@ -25,7 +25,7 @@ func NewFindBooksByLikeNameLogic(ctx context.Context, svcCtx *svc.ServiceContext
 }
 
 func (l *FindBooksByLikeNameLogic) FindBooksByLikeName(in *book.BookBasicInfoReq) (*book.BooksBasicInfoReply, error) {
-	reps, err := l.svcCtx.Model.FindBooksByLikeName(in.Name)
+	reps, err := l.svcCtx.BookBasicInfoModel.FindBooksByLikeName(in.Name)
 	if err != nil {
 		return nil, err
 	}

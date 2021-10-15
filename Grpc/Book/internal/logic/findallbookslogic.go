@@ -24,7 +24,7 @@ func NewFindAllBooksLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Find
 }
 
 func (l *FindAllBooksLogic) FindAllBooks(in *book.Request) (*book.BooksBasicInfoReply, error) {
-	reps, err := l.svcCtx.Model.FindAll()
+	reps, err := l.svcCtx.BookBasicInfoModel.FindAll()
 	if err != nil {
 		return nil, err
 	}

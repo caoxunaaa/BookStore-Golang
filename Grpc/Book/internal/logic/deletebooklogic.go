@@ -24,7 +24,7 @@ func NewDeleteBookLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 }
 
 func (l *DeleteBookLogic) DeleteBook(in *book.BookBasicInfoReq) (*book.Reply, error) {
-	if err := l.svcCtx.Model.Delete(in.Id); err!=nil{
+	if err := l.svcCtx.BookBasicInfoModel.Delete(in.Id); err != nil {
 		return nil, err
 	}
 	return &book.Reply{Ok: true}, nil

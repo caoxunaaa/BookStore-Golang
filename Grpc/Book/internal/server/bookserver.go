@@ -21,6 +21,7 @@ func NewBookServer(svcCtx *svc.ServiceContext) *BookServer {
 	}
 }
 
+//   book_basic_info
 func (s *BookServer) FindAllBooksSortedByMonth(ctx context.Context, in *book.Request) (*book.BooksBasicInfoReply, error) {
 	l := logic.NewFindAllBooksSortedByMonthLogic(ctx, s.svcCtx)
 	return l.FindAllBooksSortedByMonth(in)
@@ -54,4 +55,30 @@ func (s *BookServer) DeleteBook(ctx context.Context, in *book.BookBasicInfoReq) 
 func (s *BookServer) UpdateUser(ctx context.Context, in *book.BookBasicInfoReq) (*book.Reply, error) {
 	l := logic.NewUpdateUserLogic(ctx, s.svcCtx)
 	return l.UpdateUser(in)
+}
+
+//   book_content
+func (s *BookServer) FindAllBookContentsByBookId(ctx context.Context, in *book.BookContentReq) (*book.BookContentsReply, error) {
+	l := logic.NewFindAllBookContentsByBookIdLogic(ctx, s.svcCtx)
+	return l.FindAllBookContentsByBookId(in)
+}
+
+func (s *BookServer) FindOneBookContentByBookIdAndChapterNum(ctx context.Context, in *book.BookContentReq) (*book.BookContentReply, error) {
+	l := logic.NewFindOneBookContentByBookIdAndChapterNumLogic(ctx, s.svcCtx)
+	return l.FindOneBookContentByBookIdAndChapterNum(in)
+}
+
+func (s *BookServer) CreateBookContent(ctx context.Context, in *book.BookContentReq) (*book.Reply, error) {
+	l := logic.NewCreateBookContentLogic(ctx, s.svcCtx)
+	return l.CreateBookContent(in)
+}
+
+func (s *BookServer) DeleteBookContent(ctx context.Context, in *book.BookContentReq) (*book.Reply, error) {
+	l := logic.NewDeleteBookContentLogic(ctx, s.svcCtx)
+	return l.DeleteBookContent(in)
+}
+
+func (s *BookServer) UpdateBookContent(ctx context.Context, in *book.BookContentReq) (*book.Reply, error) {
+	l := logic.NewUpdateBookContentLogic(ctx, s.svcCtx)
+	return l.UpdateBookContent(in)
 }

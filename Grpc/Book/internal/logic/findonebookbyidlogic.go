@@ -24,7 +24,7 @@ func NewFindOneBookByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *F
 }
 
 func (l *FindOneBookByIdLogic) FindOneBookById(in *book.BookBasicInfoReq) (*book.BookBasicInfoReply, error) {
-	rep, err := l.svcCtx.Model.FindOne(in.Id)
+	rep, err := l.svcCtx.BookBasicInfoModel.FindOne(in.Id)
 	if err != nil {
 		return nil, err
 	}

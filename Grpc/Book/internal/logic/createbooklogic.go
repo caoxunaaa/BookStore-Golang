@@ -26,18 +26,18 @@ func NewCreateBookLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateBookLogic) CreateBook(in *book.BookBasicInfoReq) (*book.Reply, error) {
-	storeTime, err :=time.ParseInLocation("2006-01-02", in.StorageTime,time.Local)
+	storeTime, err := time.ParseInLocation("2006-01-02", in.StorageTime, time.Local)
 	if err != nil {
 		return nil, err
 	}
-	_, err = l.svcCtx.Model.Insert(model.BookBasicInfo{
-		Name: in.Name,
-		Author: in.Author,
-		Image: in.Image,
+	_, err = l.svcCtx.BookBasicInfoModel.Insert(model.BookBasicInfo{
+		Name:        in.Name,
+		Author:      in.Author,
+		Image:       in.Image,
 		StorageTime: storeTime,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return &book.Reply{Ok: true, Message: in.Name+"入库"}, nil
+	return &book.Reply{Ok: true, Message: in.Name + "入库"}, nil
 }

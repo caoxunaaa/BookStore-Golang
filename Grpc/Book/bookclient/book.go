@@ -15,12 +15,16 @@ import (
 type (
 	BookBasicInfoReply  = book.BookBasicInfoReply
 	BookBasicInfoReq    = book.BookBasicInfoReq
+	BookContentReply    = book.BookContentReply
+	BookContentReq      = book.BookContentReq
+	BookContentsReply   = book.BookContentsReply
 	BooksBasicInfoReply = book.BooksBasicInfoReply
 	Reply               = book.Reply
 	Request             = book.Request
 	UsernameReq         = book.UsernameReq
 
 	Book interface {
+		//   book_basic_info
 		FindAllBooksSortedByMonth(ctx context.Context, in *Request, opts ...grpc.CallOption) (*BooksBasicInfoReply, error)
 		FindAllBooks(ctx context.Context, in *Request, opts ...grpc.CallOption) (*BooksBasicInfoReply, error)
 		FindBooksByLikeName(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BooksBasicInfoReply, error)
@@ -28,6 +32,12 @@ type (
 		CreateBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
 		DeleteBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
 		UpdateUser(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
+		//   book_content
+		FindAllBookContentsByBookId(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*BookContentsReply, error)
+		FindOneBookContentByBookIdAndChapterNum(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*BookContentReply, error)
+		CreateBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error)
+		DeleteBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error)
+		UpdateBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error)
 	}
 
 	defaultBook struct {
@@ -41,6 +51,7 @@ func NewBook(cli zrpc.Client) Book {
 	}
 }
 
+//   book_basic_info
 func (m *defaultBook) FindAllBooksSortedByMonth(ctx context.Context, in *Request, opts ...grpc.CallOption) (*BooksBasicInfoReply, error) {
 	client := book.NewBookClient(m.cli.Conn())
 	return client.FindAllBooksSortedByMonth(ctx, in, opts...)
@@ -74,4 +85,30 @@ func (m *defaultBook) DeleteBook(ctx context.Context, in *BookBasicInfoReq, opts
 func (m *defaultBook) UpdateUser(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error) {
 	client := book.NewBookClient(m.cli.Conn())
 	return client.UpdateUser(ctx, in, opts...)
+}
+
+//   book_content
+func (m *defaultBook) FindAllBookContentsByBookId(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*BookContentsReply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.FindAllBookContentsByBookId(ctx, in, opts...)
+}
+
+func (m *defaultBook) FindOneBookContentByBookIdAndChapterNum(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*BookContentReply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.FindOneBookContentByBookIdAndChapterNum(ctx, in, opts...)
+}
+
+func (m *defaultBook) CreateBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.CreateBookContent(ctx, in, opts...)
+}
+
+func (m *defaultBook) DeleteBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.DeleteBookContent(ctx, in, opts...)
+}
+
+func (m *defaultBook) UpdateBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.UpdateBookContent(ctx, in, opts...)
 }

@@ -26,15 +26,15 @@ func NewUpdateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Update
 }
 
 func (l *UpdateUserLogic) UpdateUser(in *book.BookBasicInfoReq) (*book.Reply, error) {
-	storeTime, err :=time.ParseInLocation("2006-01-02", in.StorageTime,time.Local)
+	storeTime, err := time.ParseInLocation("2006-01-02", in.StorageTime, time.Local)
 	if err != nil {
 		return nil, err
 	}
-	err = l.svcCtx.Model.Update(model.BookBasicInfo{
-		Id: in.Id,
-		Name: in.Name,
-		Author: in.Author,
-		Image: in.Image,
+	err = l.svcCtx.BookBasicInfoModel.Update(model.BookBasicInfo{
+		Id:          in.Id,
+		Name:        in.Name,
+		Author:      in.Author,
+		Image:       in.Image,
 		StorageTime: storeTime,
 	})
 	if err != nil {

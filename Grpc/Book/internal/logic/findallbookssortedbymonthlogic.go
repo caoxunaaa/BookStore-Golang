@@ -25,7 +25,7 @@ func NewFindAllBooksSortedByMonthLogic(ctx context.Context, svcCtx *svc.ServiceC
 }
 
 func (l *FindAllBooksSortedByMonthLogic) FindAllBooksSortedByMonth(in *book.Request) (*book.BooksBasicInfoReply, error) {
-	reps, err := l.svcCtx.Model.FindBooksSortedByMonth(in.Year, in.Month)
+	reps, err := l.svcCtx.BookBasicInfoModel.FindBooksSortedByMonth(in.Year, in.Month)
 	if err != nil {
 		return nil, err
 	}
