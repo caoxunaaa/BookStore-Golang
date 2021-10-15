@@ -13,7 +13,11 @@ func CreateBookHandler(c *gin.Context) {
 	name := c.PostForm("name")
 	author := c.PostForm("author")
 	storageTime := c.PostForm("storageTime")
-	_, image := Utils.UploadFile(c.Request, "image")
+	_, image, err := Utils.UploadFile(c.Request, "image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	rep, err := Services.Grpc.BookGrpc.CreateBook(context.Background(), &book.BookBasicInfoReq{
 		Name:        name,
 		Author:      author,

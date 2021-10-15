@@ -34,6 +34,6 @@ func (l *FindOneBookByIdLogic) FindOneBookById(in *book.BookBasicInfoReq) (*book
 		Name:        rep.Name,
 		Author:      rep.Author,
 		Image:       rep.Image,
-		StorageTime: rep.StorageTime.Format("2006-01-02"),
+		StorageTime: rep.StorageTime.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 }

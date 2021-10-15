@@ -10,36 +10,38 @@ import (
 	"strings"
 )
 
-func UploadFile(r *http.Request, name string) (fileName, storePath string) {
+func UploadFile(r *http.Request, name string) (fileName, storePath string, err error) {
 	_, fh, err := r.FormFile(name)
 	if err != nil {
-		return "", ""
+		return "", "", err
 	}
 	fileName = fh.Filename
 	nameSplit := strings.Split(fileName, ".")
 	dir := nameSplit[len(nameSplit)-1]
-	storePath = "assets/" + dir + "/" + fileName
-
-	_, err = os.Stat(Services.C.FileStorage.Path + "assets")
+	storePath = "Assets/" + dir + "/" + fileName
+	fmt.Println(dir)
+	fmt.Println(Services.C.FileStorage.Path + "Assets")
+	_, err = os.Stat(Services.C.FileStorage.Path + "Assets")
 	if os.IsNotExist(err) {
 		fmt.Println("目录不存在,创建目录")
-		err = os.Mkdir(Services.C.FileStorage.Path+"assets", 0777)
+		err = os.Mkdir(Services.C.FileStorage.Path+"Assets", 0777)
 		if err != nil {
-			return "", ""
+			fmt.Println("目录不存在,创建目录")
+			return "", "", err
 		}
 	}
-	_, err = os.Stat(Services.C.FileStorage.Path + "assets/" + dir)
+	_, err = os.Stat(Services.C.FileStorage.Path + "Assets/" + dir)
 	if os.IsNotExist(err) {
 		fmt.Println("文件不存在,创建目录")
-		err = os.Mkdir(Services.C.FileStorage.Path+"assets/"+dir, 0777)
+		err = os.Mkdir(Services.C.FileStorage.Path+"Assets/"+dir, 0777)
 		if err != nil {
-			return "", ""
+			return "", "", err
 		}
 	}
 
 	err = SaveUploadedFile(fh, Services.C.FileStorage.Path+storePath)
 	if err != nil {
-		return "", ""
+		return "", "", err
 	}
 	return
 }

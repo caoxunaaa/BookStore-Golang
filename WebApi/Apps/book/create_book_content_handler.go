@@ -3,22 +3,32 @@ package book
 import (
 	"WebApi/Pb/book"
 	"WebApi/Services"
-	"WebApi/Utils"
 	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func CreateBookContentHandler(c *gin.Context) {
-	name := c.PostForm("name")
-	author := c.PostForm("author")
-	storageTime := c.PostForm("storageTime")
-	_, image := Utils.UploadFile(c.Request, "image")
-	rep, err := Services.Grpc.BookGrpc.CreateBook(context.Background(), &book.BookBasicInfoReq{
-		Name:        name,
-		Author:      author,
-		Image:       image,
-		StorageTime: storageTime,
+	bookId, err := strconv.ParseInt(c.PostForm("bookId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	chapterNum, err := strconv.ParseInt(c.PostForm("chapterNum"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ChapterName := c.PostForm("chapterName")
+	ChapterContent := c.PostForm("chapterContent")
+	CreateTime := c.PostForm("createTime")
+	rep, err := Services.Grpc.BookGrpc.CreateBookContent(context.Background(), &book.BookContentReq{
+		BookId:         bookId,
+		ChapterNum:     chapterNum,
+		ChapterName:    ChapterName,
+		ChapterContent: ChapterContent,
+		CreateTime:     CreateTime,
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

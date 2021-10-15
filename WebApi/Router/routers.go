@@ -19,11 +19,16 @@ func Init() *gin.Engine {
 		userGroup.POST("/register", user.RegisterHandler)
 		userGroup.GET("/", Middlewares.JWTSuperuserMiddleware(), user.GetAllUsersHandler)
 	}
-	bookGroup := r.Group("/book", Middlewares.JWTSuperuserMiddleware())
+	bookGroup := r.Group("/book", Middlewares.JWTAuthMiddleware())
 	{
 		bookGroup.POST("/", book.CreateBookHandler)
 		bookGroup.GET("/", book.GetAllBooksHandler)
+		content := bookGroup.Group("/content/")
+		{
+			content.GET("/", book.GetAllBookContentByBookIdHandler)
+			content.GET("/chapterNum", book.GetOneBookContentByBookIdAndChapterNumHandler)
+			content.POST("/", book.CreateBookContentHandler)
+		}
 	}
-
 	return r
 }

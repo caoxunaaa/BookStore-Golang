@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/tal-tech/go-zero/core/stores/cache"
 	"github.com/tal-tech/go-zero/core/stores/sqlc"
@@ -16,7 +15,7 @@ import (
 var (
 	bookBasicInfoFieldNames          = builderx.RawFieldNames(&BookBasicInfo{})
 	bookBasicInfoRows                = strings.Join(bookBasicInfoFieldNames, ",")
-	bookBasicInfoRowsExpectAutoSet   = strings.Join(stringx.Remove(bookBasicInfoFieldNames, "`create_time`", "`update_time`"), ",")
+	bookBasicInfoRowsExpectAutoSet   = strings.Join(stringx.Remove(bookBasicInfoFieldNames, "`id`", "`create_time`", "`update_time`"), ",")
 	bookBasicInfoRowsWithPlaceHolder = strings.Join(stringx.Remove(bookBasicInfoFieldNames, "`id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
 	cacheBsBooksBookBasicInfoIdPrefix = "cache:bsBooks:bookBasicInfo:id:"
@@ -39,11 +38,11 @@ type (
 	}
 
 	BookBasicInfo struct {
-		Id          int64     `db:"id"`
-		Name        string    `db:"name"`         // 书籍名称
-		Author      string    `db:"author"`       // 作者
-		Image       string    `db:"image"`        // 书籍图片的路径
-		StorageTime time.Time `db:"storage_time"` // 入库时间
+		Id          int64        `db:"id"`
+		Name        string       `db:"name"`         // 书籍名称
+		Author      string       `db:"author"`       // 作者
+		Image       string       `db:"image"`        // 书籍图片的路径
+		StorageTime sql.NullTime `db:"storage_time"` // 入库时间
 	}
 )
 
@@ -55,8 +54,8 @@ func NewBookBasicInfoModel(conn sqlx.SqlConn, c cache.CacheConf) BookBasicInfoMo
 }
 
 func (m *defaultBookBasicInfoModel) Insert(data BookBasicInfo) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, bookBasicInfoRowsExpectAutoSet)
-	ret, err := m.ExecNoCache(query, data.Id, data.Name, data.Author, data.Image, data.StorageTime)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, bookBasicInfoRowsExpectAutoSet)
+	ret, err := m.ExecNoCache(query, data.Name, data.Author, data.Image, data.StorageTime)
 
 	return ret, err
 }

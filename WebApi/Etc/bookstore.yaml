@@ -8,4 +8,4 @@ Jwt:
   Secret: Superxon
   Expire: 86400
 FileStorage:
-  Path: /
+  Path: /home/book-store/BookStoreProject/WebApi/

@@ -3,6 +3,8 @@ package logic
 import (
 	"Book/model"
 	"context"
+	"database/sql"
+	"fmt"
 	"time"
 
 	"Book/book"
@@ -26,7 +28,8 @@ func NewCreateBookLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateBookLogic) CreateBook(in *book.BookBasicInfoReq) (*book.Reply, error) {
-	storeTime, err := time.ParseInLocation("2006-01-02", in.StorageTime, time.Local)
+	storeTime, err := time.ParseInLocation("2006-01-02 15:04:05", in.StorageTime, time.Local)
+	fmt.Println(storeTime)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +37,7 @@ func (l *CreateBookLogic) CreateBook(in *book.BookBasicInfoReq) (*book.Reply, er
 		Name:        in.Name,
 		Author:      in.Author,
 		Image:       in.Image,
-		StorageTime: storeTime,
+		StorageTime: sql.NullTime{Time: storeTime},
 	})
 	if err != nil {
 		return nil, err

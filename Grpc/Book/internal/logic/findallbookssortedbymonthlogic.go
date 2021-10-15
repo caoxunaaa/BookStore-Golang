@@ -37,7 +37,7 @@ func (l *FindAllBooksSortedByMonthLogic) FindAllBooksSortedByMonth(in *book.Requ
 				Name:        t[i].Name,
 				Author:      t[i].Author,
 				Image:       t[i].Image,
-				StorageTime: t[i].StorageTime.Format("2006-01-02"),
+				StorageTime: t[i].StorageTime.Time.Format("2006-01-02 15:04:05"),
 			})
 		}
 		return res

@@ -39,7 +39,7 @@ func (l *FindAllBookContentsByBookIdLogic) FindAllBookContentsByBookId(in *book.
 				ChapterNum:     t[i].ChapterNum,
 				ChapterName:    t[i].ChapterName,
 				ChapterContent: t[i].ChapterContent,
-				CreateTime:     t[i].CreateTime.Format("2006-01-02"),
+				CreateTime:     t[i].CreateTime.Time.Format("2006-01-02 15:04:05"),
 			})
 		}
 		return res

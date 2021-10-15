@@ -3,6 +3,7 @@ package logic
 import (
 	"Book/model"
 	"context"
+	"database/sql"
 	"time"
 
 	"Book/book"
@@ -26,7 +27,7 @@ func NewUpdateBookContentLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *UpdateBookContentLogic) UpdateBookContent(in *book.BookContentReq) (*book.Reply, error) {
-	createTime, err := time.ParseInLocation("2006-01-02", in.CreateTime, time.Local)
+	createTime, err := time.ParseInLocation("2006-01-02 15:04:05", in.CreateTime, time.Local)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +36,7 @@ func (l *UpdateBookContentLogic) UpdateBookContent(in *book.BookContentReq) (*bo
 		ChapterNum:     in.ChapterNum,
 		ChapterName:    in.ChapterName,
 		ChapterContent: in.ChapterContent,
-		CreateTime:     createTime,
+		CreateTime:     sql.NullTime{Time: createTime},
 	})
 	if err != nil {
 		return nil, err
