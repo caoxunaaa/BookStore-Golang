@@ -37,6 +37,11 @@ func (s *BookServer) FindBooksByLikeName(ctx context.Context, in *book.BookBasic
 	return l.FindBooksByLikeName(in)
 }
 
+func (s *BookServer) FindBooksByStorageUserId(ctx context.Context, in *book.BookBasicInfoReq) (*book.BooksBasicInfoReply, error) {
+	l := logic.NewFindBooksByStorageUserIdLogic(ctx, s.svcCtx)
+	return l.FindBooksByStorageUserId(in)
+}
+
 func (s *BookServer) FindOneBookById(ctx context.Context, in *book.BookBasicInfoReq) (*book.BookBasicInfoReply, error) {
 	l := logic.NewFindOneBookByIdLogic(ctx, s.svcCtx)
 	return l.FindOneBookById(in)

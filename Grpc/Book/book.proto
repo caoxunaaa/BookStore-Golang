@@ -24,7 +24,8 @@ message BookBasicInfoReply{
   string name = 2;
   string author = 3;
   string image = 4;
-  string storage_time = 5;
+  int64 storage_user_id = 5;
+  string storage_time = 6;
 }
 
 message BooksBasicInfoReply{
@@ -36,7 +37,8 @@ message BookBasicInfoReq{
   string name = 2;
   string author = 3;
   string image = 4;
-  string storage_time = 5;
+  int64 storage_user_id = 5;
+  string storage_time = 6;
 }
 
 message BookContentReq{
@@ -62,17 +64,19 @@ message BookContentsReply{
 
 
 service Book {
-//  book_basic_info
+  //  book_basic_info
   rpc FindAllBooksSortedByMonth(Request) returns(BooksBasicInfoReply);
   rpc FindAllBooks(Request) returns(BooksBasicInfoReply);
   rpc FindBooksByLikeName(BookBasicInfoReq) returns(BooksBasicInfoReply);
+  rpc FindBooksByStorageUserId(BookBasicInfoReq) returns(BooksBasicInfoReply);
 
   rpc FindOneBookById(BookBasicInfoReq) returns(BookBasicInfoReply);
+
 
   rpc CreateBook(BookBasicInfoReq) returns(Reply);
   rpc DeleteBook(BookBasicInfoReq) returns(Reply);
   rpc UpdateUser(BookBasicInfoReq) returns(Reply);
-//  book_content
+  //  book_content
   rpc FindAllBookContentsByBookId(BookContentReq) returns(BookContentsReply);
 
   rpc FindOneBookContentByBookIdAndChapterNum(BookContentReq) returns(BookContentReply);

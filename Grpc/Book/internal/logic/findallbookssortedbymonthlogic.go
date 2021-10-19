@@ -33,11 +33,12 @@ func (l *FindAllBooksSortedByMonthLogic) FindAllBooksSortedByMonth(in *book.Requ
 		var res = make([]*book.BookBasicInfoReply, 0)
 		for i := 0; i < len(t); i++ {
 			res = append(res, &book.BookBasicInfoReply{
-				Id:          t[i].Id,
-				Name:        t[i].Name,
-				Author:      t[i].Author,
-				Image:       t[i].Image,
-				StorageTime: t[i].StorageTime.Time.Format("2006-01-02 15:04:05"),
+				Id:            t[i].Id,
+				Name:          t[i].Name,
+				Author:        t[i].Author,
+				Image:         t[i].Image,
+				StorageUserId: t[i].StorageUserId,
+				StorageTime:   t[i].StorageTime.Time.Format("2006-01-02 15:04:05"),
 			})
 		}
 		return res

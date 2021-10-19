@@ -42,12 +42,14 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, struct {
+		Id           int64
 		Name         string
 		NickName     string
 		AccessToken  string
 		AccessExpire int64
 		RefreshAfter int64
 	}{
+		Id:           rep.Id,
 		Name:         rep.Username,
 		NickName:     rep.Nickname,
 		AccessToken:  jwtToken,

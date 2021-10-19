@@ -2,16 +2,16 @@
   <div id="login" style="">
     <el-row :gutter="20">
       <el-col :span="8" :offset="8">
-        <div class="grid-content bg-purple">
+        <div class="grid-content bg-purple" >
           <el-form ref="form" :model="form" label-width="140px">
             <el-form-item label="用户名或邮箱或电话">
               <el-input le v-model="form.username"></el-input>
             </el-form-item>
             <el-form-item label="密码">
-              <el-input v-model="form.password" show-password></el-input>
+              <el-input v-model="form.password" show-password @keyup.enter.native="onSubmit('form')"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit('form')">登录</el-button>
+              <el-button type="primary" @click="onSubmit('form')" >登录</el-button>
               <el-button>取消</el-button>
             </el-form-item>
           </el-form>
@@ -64,6 +64,7 @@ export default {
             const res = response.data
             console.log(res)
             localStorage.setItem('Token', res['AccessToken'])
+            localStorage.setItem('UserId', res['Id'])
             localStorage.setItem('Username', res['Name'])
             localStorage.setItem('Nickname', res['NickName'])
             that.$message({message: '登录成功', duration: 1000})

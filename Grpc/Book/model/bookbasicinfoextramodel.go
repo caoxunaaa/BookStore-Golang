@@ -31,3 +31,13 @@ func (m *defaultBookBasicInfoModel) FindBooksByLikeName(name string) ([]*BookBas
 	}
 	return v, err
 }
+
+func (m *defaultBookBasicInfoModel) FindBooksByStorageUserId(storageUserId int64) ([]*BookBasicInfo, error) {
+	query := fmt.Sprintf("select %s from %s where storage_user_id=%d", bookBasicInfoRows, m.table, storageUserId)
+	var v = make([]*BookBasicInfo, 0)
+	err := m.QueryRowsNoCache(&v, query)
+	if err != nil {
+		return nil, err
+	}
+	return v, err
+}

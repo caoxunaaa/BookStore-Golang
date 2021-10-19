@@ -11,6 +11,23 @@ Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 Vue.use(ElementUI)
 
+Vue.prototype.getNowFormatDate = function () {
+  const date = new Date()
+  let year = date.getFullYear()
+  let month = date.getMonth() + 1
+  let day = date.getDate()
+  let hour = date.getHours()
+  let min = date.getMinutes()
+  let sec = date.getSeconds()
+  if (month >= 1 && month <= 9) {
+    month = '0' + month
+  }
+  if (day >= 0 && day <= 9) {
+    day = '0' + day
+  }
+  return year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec
+}
+
 axios.interceptors.request.use((config) => {
   config.headers.authorization = localStorage.getItem('Token')
   return config

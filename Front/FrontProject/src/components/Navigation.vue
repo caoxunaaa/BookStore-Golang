@@ -9,7 +9,9 @@
       background-color="#545c64"
       text-color="#fff"
       active-text-color="#ffd04b">
-      <el-menu-item><router-link tag="li" :to="{path:'/'}">首页</router-link></el-menu-item>
+      <el-menu-item>
+        <router-link tag="li" :to="{path:'/book/overview'}">首页</router-link>
+      </el-menu-item>
       <el-submenu index="2">
         <template slot="title">我的工作台</template>
         <el-menu-item index="2-1">选项1</el-menu-item>
@@ -22,16 +24,28 @@
           <el-menu-item index="2-4-3">选项3</el-menu-item>
         </el-submenu>
       </el-submenu>
+
       <el-menu-item index="3" disabled>消息中心</el-menu-item>
+
       <div style="float: right" v-if="logged">
-        <el-submenu index="4">
-        <template slot="title" >{{nickname}}</template>
-        <el-menu-item index="4-1" @click="logout">退出登录</el-menu-item>
-      </el-submenu>
+        <el-submenu index="5" style="float: right">
+          <template slot="title">{{ nickname }}</template>
+          <el-menu-item>
+            <router-link tag="li" :to="{path:'/book/upload'}">我的书籍</router-link>-->
+          </el-menu-item>
+          <el-menu-item index="4-2" @click="logout">退出登录</el-menu-item>
+        </el-submenu>
+<!--        <el-menu-item index="4" style="float: right">-->
+<!--          <router-link tag="li" :to="{path:'/book/upload'}">上传书籍</router-link>-->
+<!--        </el-menu-item>-->
       </div>
       <div v-else>
-        <el-menu-item  style="float: right"><router-link tag="li" :to="{path:'/user/login'}">登录</router-link></el-menu-item>
-        <el-menu-item  style="float: right"><router-link tag="li" :to="{path:'/user/register'}">注册</router-link></el-menu-item>
+        <el-menu-item style="float: right">
+          <router-link tag="li" :to="{path:'/user/login'}">登录</router-link>
+        </el-menu-item>
+        <el-menu-item style="float: right">
+          <router-link tag="li" :to="{path:'/user/register'}">注册</router-link>
+        </el-menu-item>
       </div>
     </el-menu>
   </div>
@@ -71,7 +85,7 @@ export default {
 </script>
 
 <style>
-  #navigation {
-    margin-bottom: 20px;
-  }
+#navigation {
+  margin-bottom: 20px;
+}
 </style>

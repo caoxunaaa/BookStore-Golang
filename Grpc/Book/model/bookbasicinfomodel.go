@@ -30,6 +30,7 @@ type (
 		FindAll() ([]*BookBasicInfo, error)
 		FindBooksSortedByMonth(year, month int64) ([]*BookBasicInfo, error)
 		FindBooksByLikeName(name string) ([]*BookBasicInfo, error)
+		FindBooksByStorageUserId(storageUserId int64) ([]*BookBasicInfo, error)
 	}
 
 	defaultBookBasicInfoModel struct {
@@ -38,11 +39,12 @@ type (
 	}
 
 	BookBasicInfo struct {
-		Id          int64        `db:"id"`
-		Name        string       `db:"name"`         // 书籍名称
-		Author      string       `db:"author"`       // 作者
-		Image       string       `db:"image"`        // 书籍图片的路径
-		StorageTime sql.NullTime `db:"storage_time"` // 入库时间
+		Id            int64        `db:"id"`
+		Name          string       `db:"name"`            // 书籍名称
+		Author        string       `db:"author"`          // 作者
+		Image         string       `db:"image"`           // 书籍图片的路径
+		StorageUserId int64        `db:"storage_user_id"` // 入库人
+		StorageTime   sql.NullTime `db:"storage_time"`    // 入库时间
 	}
 )
 
@@ -54,8 +56,8 @@ func NewBookBasicInfoModel(conn sqlx.SqlConn, c cache.CacheConf) BookBasicInfoMo
 }
 
 func (m *defaultBookBasicInfoModel) Insert(data BookBasicInfo) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, bookBasicInfoRowsExpectAutoSet)
-	ret, err := m.ExecNoCache(query, data.Name, data.Author, data.Image, data.StorageTime)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, bookBasicInfoRowsExpectAutoSet)
+	ret, err := m.ExecNoCache(query, data.Name, data.Author, data.Image, data.StorageUserId, data.StorageTime)
 
 	return ret, err
 }
@@ -81,7 +83,7 @@ func (m *defaultBookBasicInfoModel) Update(data BookBasicInfo) error {
 	bsBooksBookBasicInfoIdKey := fmt.Sprintf("%s%v", cacheBsBooksBookBasicInfoIdPrefix, data.Id)
 	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, bookBasicInfoRowsWithPlaceHolder)
-		return conn.Exec(query, data.Name, data.Author, data.Image, data.StorageTime, data.Id)
+		return conn.Exec(query, data.Name, data.Author, data.Image, data.StorageUserId, data.StorageTime, data.Id)
 	}, bsBooksBookBasicInfoIdKey)
 	return err
 }

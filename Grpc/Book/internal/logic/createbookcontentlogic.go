@@ -27,7 +27,7 @@ func NewCreateBookContentLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *CreateBookContentLogic) CreateBookContent(in *book.BookContentReq) (*book.Reply, error) {
-	createTime, err := time.ParseInLocation("2006-01-02 15:04:05", in.CreateTime, time.Local)
+	createTime, err := time.Parse("2006-01-02 15:04:05", in.CreateTime)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (l *CreateBookContentLogic) CreateBookContent(in *book.BookContentReq) (*bo
 		ChapterNum:     in.ChapterNum,
 		ChapterName:    in.ChapterName,
 		ChapterContent: in.ChapterContent,
-		CreateTime:     sql.NullTime{Time: createTime},
+		CreateTime:     sql.NullTime{Time: createTime, Valid: true},
 	})
 	if err != nil {
 		return nil, err

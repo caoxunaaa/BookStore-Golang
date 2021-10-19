@@ -30,10 +30,11 @@ func (l *FindOneBookByIdLogic) FindOneBookById(in *book.BookBasicInfoReq) (*book
 	}
 
 	return &book.BookBasicInfoReply{
-		Id:          rep.Id,
-		Name:        rep.Name,
-		Author:      rep.Author,
-		Image:       rep.Image,
-		StorageTime: rep.StorageTime.Time.Format("2006-01-02 15:04:05"),
+		Id:            rep.Id,
+		Name:          rep.Name,
+		Author:        rep.Author,
+		Image:         rep.Image,
+		StorageUserId: rep.StorageUserId,
+		StorageTime:   rep.StorageTime.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 }

@@ -28,6 +28,7 @@ type (
 		FindAllBooksSortedByMonth(ctx context.Context, in *Request, opts ...grpc.CallOption) (*BooksBasicInfoReply, error)
 		FindAllBooks(ctx context.Context, in *Request, opts ...grpc.CallOption) (*BooksBasicInfoReply, error)
 		FindBooksByLikeName(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BooksBasicInfoReply, error)
+		FindBooksByStorageUserId(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BooksBasicInfoReply, error)
 		FindOneBookById(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BookBasicInfoReply, error)
 		CreateBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
 		DeleteBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
@@ -65,6 +66,11 @@ func (m *defaultBook) FindAllBooks(ctx context.Context, in *Request, opts ...grp
 func (m *defaultBook) FindBooksByLikeName(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BooksBasicInfoReply, error) {
 	client := book.NewBookClient(m.cli.Conn())
 	return client.FindBooksByLikeName(ctx, in, opts...)
+}
+
+func (m *defaultBook) FindBooksByStorageUserId(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BooksBasicInfoReply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.FindBooksByStorageUserId(ctx, in, opts...)
 }
 
 func (m *defaultBook) FindOneBookById(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BookBasicInfoReply, error) {

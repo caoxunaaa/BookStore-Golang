@@ -1,34 +1,34 @@
 package logic
 
 import (
-	"Book/book"
-	"Book/internal/svc"
 	"Book/model"
 	"context"
-	"fmt"
+
+	"Book/book"
+	"Book/internal/svc"
+
 	"github.com/tal-tech/go-zero/core/logx"
 )
 
-type FindAllBooksLogic struct {
+type FindBooksByStorageUserIdLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewFindAllBooksLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FindAllBooksLogic {
-	return &FindAllBooksLogic{
+func NewFindBooksByStorageUserIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FindBooksByStorageUserIdLogic {
+	return &FindBooksByStorageUserIdLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *FindAllBooksLogic) FindAllBooks(in *book.Request) (*book.BooksBasicInfoReply, error) {
-	reps, err := l.svcCtx.BookBasicInfoModel.FindAll()
+func (l *FindBooksByStorageUserIdLogic) FindBooksByStorageUserId(in *book.BookBasicInfoReq) (*book.BooksBasicInfoReply, error) {
+	reps, err := l.svcCtx.BookBasicInfoModel.FindBooksByStorageUserId(in.StorageUserId)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(reps)
 	f := func(t []*model.BookBasicInfo) []*book.BookBasicInfoReply {
 		var res = make([]*book.BookBasicInfoReply, 0)
 		for i := 0; i < len(t); i++ {

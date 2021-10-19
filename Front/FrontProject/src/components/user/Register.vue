@@ -20,7 +20,7 @@
               <el-input v-model="form.phone"></el-input>
             </el-form-item>
             <el-form-item label="昵称">
-              <el-input v-model="form.nickname"></el-input>
+              <el-input v-model="form.nickname" @keyup.enter.native="onSubmit('form')"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit('form')">注册</el-button>
