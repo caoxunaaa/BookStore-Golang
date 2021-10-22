@@ -31,7 +31,7 @@
         <el-submenu index="5" style="float: right">
           <template slot="title">{{ nickname }}</template>
           <el-menu-item>
-            <router-link tag="li" :to="{path:'/book/upload'}">我的书籍</router-link>-->
+            <router-link tag="li" :to="{path:'/book/myself'}">我的书籍</router-link>
           </el-menu-item>
           <el-menu-item index="4-2" @click="logout">退出登录</el-menu-item>
         </el-submenu>

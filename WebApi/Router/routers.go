@@ -23,6 +23,8 @@ func Init() *gin.Engine {
 	{
 		bookGroup.POST("/", book.CreateBookHandler)
 		bookGroup.GET("/", book.GetAllBooksHandler)
+		bookGroup.GET("/id/:id", book.GetBookByIdHandler)
+		bookGroup.GET("/username/:storageUserId", book.GetMyselfBooksHandler)
 		content := bookGroup.Group("/content/")
 		{
 			content.GET("/", book.GetAllBookContentByBookIdHandler)

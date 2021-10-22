@@ -6,7 +6,10 @@ import Register from '@/components/user/Register'
 import HelloWorld from '@/components/HelloWorld'
 import Book from '@/components/book/Book'
 import BooksOverView from '@/components/book/BooksOverViewPaging'
+import BooksMyself from '@/components/book/BooksMyself'
 import BooksUpload from '@/components/book/BooksUpload'
+import Content from '@/components/book/content/Content'
+import ContentOverView from '@/components/book/content/ContentOverViewPaging'
 Vue.use(Router)
 
 export default new Router({
@@ -28,7 +31,17 @@ export default new Router({
       component: Book,
       children: [
         {path: 'overview', component: BooksOverView},
-        {path: 'upload', component: BooksUpload}
+        {path: 'myself', component: BooksMyself},
+        {path: 'upload', component: BooksUpload},
+        {
+          path: ':book_id/content',
+          component: Content,
+          props: true,
+          children: [
+            {path: 'overview', component: ContentOverView}
+          ]
+        }
+
       ]
     }
   ]

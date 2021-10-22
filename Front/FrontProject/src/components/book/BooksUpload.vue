@@ -1,7 +1,7 @@
 <template>
   <div id="books_upload">
     <el-row :gutter="20">
-      <el-col :span="8" :offset="8">
+      <el-col :span="16" :offset="4">
         <div class="grid-content bg-purple">
           <el-form ref="form" :model="form">
             <el-form-item label="书籍名称">
@@ -13,7 +13,7 @@
             <el-form-item label="上传图片"><input type="file" id="book_image" accept=".jpg,.png,.jpeg"></el-form-item>
             <el-form-item>
               <el-button @click="create_book('form')"
-                         style="background-color: #409eff; color: #fff; height: 40px; width:120px">新增
+                         style="background-color: #409eff; color: #fff; height: 40px; width:120px">新建
               </el-button>
             </el-form-item>
           </el-form>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+// import Vue from 'vue'
 export default {
   name: 'BooksUpload',
   data () {
@@ -35,6 +36,9 @@ export default {
         storageUserId: 0
       }
     }
+  },
+  mounted () {
+    console.log('ok')
   },
   methods: {
     create_book (form) {

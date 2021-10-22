@@ -2,7 +2,7 @@
   <div id="books_overview">
     <div style="width: 60%; display: flex;flex-wrap: wrap;">
       <div class="list" :key="key" v-for="(book_display,key) in books_display" style="width: 14%;margin: 0 3%">
-        <el-image style="width: 80%; height: 50%" :src="book_display.Image" lazy></el-image>
+        <router-link tag="span" :to="{path:'/book/'+book_display.Id + '/content/overview'}"><el-image style="width: 80%; height: 50%" :src="book_display.Image" lazy></el-image></router-link>
         <el-tag type="success" style="margin: 3px">{{ book_display.Name }}</el-tag>
         <el-tag type="info" style="margin: 3px"><i class="el-icon-user">{{ book_display.Author }}</i></el-tag>
         <el-tag type="warning" style="margin: 3px"><i class="el-icon-time">{{ book_display.Time }}</i></el-tag>
@@ -43,6 +43,7 @@ export default {
         console.log(res)
         for (let i = 0; i < res.length; i++) {
           that.books.push({
+            Id: res[i].id,
             Name: res[i].name,
             Image: 'http://172.20.3.111:8002/' + res[i].image,
             Author: res[i].author,
