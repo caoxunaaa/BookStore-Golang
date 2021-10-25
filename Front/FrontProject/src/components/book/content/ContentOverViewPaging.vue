@@ -21,7 +21,6 @@
       :with-header="false"
       v-if="drawer" :size="size">
       <div style="white-space: pre-wrap;text-align: left">{{body_content}}</div>
-<!--       {{ body_content }}-->
     </el-drawer>
   </div>
 </template>
@@ -68,6 +67,7 @@ export default {
             CreateTime: res[i].create_time
           })
         }
+        that.$root.Bus.$emit('book_chapter_count', that.contents.length)
         if (that.contents.length < 20) {
           that.contents_display = that.contents.slice(0, that.contents.length)
         } else {

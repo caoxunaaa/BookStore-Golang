@@ -6,7 +6,7 @@
       title= "上传章节"
       :direction="direction"
       :visible.sync="drawer_upload_content">
-      <ContentUpload v-if="drawer_upload_content" :book_id="book_id" :book_name="book_name"></ContentUpload>
+      <ContentUpload v-if="drawer_upload_content" :book_id="book_id" :book_name="book_name" :chapter_count="chapter_count"></ContentUpload>
     </el-drawer>
   </div>
 </template>
@@ -23,13 +23,21 @@ export default {
     return {
       drawer_upload_content: false,
       direction: 'ltr',
-      book_name: ''
+      book_name: '',
+      chapter_count: ''
     }
   },
   mounted () {
     this.get_book_name()
+    this.get_book_content_count()
   },
   methods: {
+    get_book_content_count () {
+      this.$root.Bus.$on('book_chapter_count', e => {
+        console.log('接收到', e)
+        this.chapter_count = e
+      })
+    },
     get_book_name () {
       let that = this
       that.$axios({

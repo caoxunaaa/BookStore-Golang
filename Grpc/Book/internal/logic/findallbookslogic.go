@@ -5,7 +5,6 @@ import (
 	"Book/internal/svc"
 	"Book/model"
 	"context"
-	"fmt"
 	"github.com/tal-tech/go-zero/core/logx"
 )
 
@@ -28,7 +27,7 @@ func (l *FindAllBooksLogic) FindAllBooks(in *book.Request) (*book.BooksBasicInfo
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(reps)
+	//fmt.Println(reps)
 	f := func(t []*model.BookBasicInfo) []*book.BookBasicInfoReply {
 		var res = make([]*book.BookBasicInfoReply, 0)
 		for i := 0; i < len(t); i++ {

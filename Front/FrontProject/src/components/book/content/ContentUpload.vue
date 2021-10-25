@@ -46,7 +46,8 @@ export default {
   },
   props: [
     'book_id',
-    'book_name'
+    'book_name',
+    'chapter_count'
   ],
   mounted () {
     this.get_book_name_and_chapter_num()
@@ -54,6 +55,7 @@ export default {
   methods: {
     get_book_name_and_chapter_num () {
       this.form.BookName = this.book_name
+      this.form.ChapterNum = this.chapter_count + 1
     },
     upload_content (form) {
       this.$refs[form].validate((valid) => {

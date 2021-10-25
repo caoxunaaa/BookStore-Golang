@@ -5,7 +5,6 @@ import (
 	"WebApi/Services"
 	"WebApi/Utils"
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -24,7 +23,7 @@ func CreateBookHandler(c *gin.Context) {
 	if image == "" {
 		image = "Assets/无法加载.png"
 	}
-	fmt.Println(name, author, image, storageUserId, storageTime)
+	//fmt.Println(name, author, image, storageUserId, storageTime)
 	rep, err := Services.Grpc.BookGrpc.CreateBook(context.Background(), &book.BookBasicInfoReq{
 		Name:          name,
 		Author:        author,

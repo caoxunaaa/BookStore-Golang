@@ -36,9 +36,15 @@ axios.interceptors.request.use((config) => {
 })
 
 /* eslint-disable no-new */
+const Bus = new Vue()
 new Vue({
   el: '#app',
   router,
   components: {App},
+  data () {
+    return {
+      Bus
+    }
+  },
   template: '<App/>'
 })

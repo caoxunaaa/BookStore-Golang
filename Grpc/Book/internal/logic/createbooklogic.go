@@ -4,7 +4,6 @@ import (
 	"Book/model"
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"Book/book"
@@ -29,7 +28,7 @@ func NewCreateBookLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 
 func (l *CreateBookLogic) CreateBook(in *book.BookBasicInfoReq) (*book.Reply, error) {
 	storeTime, err := time.Parse("2006-01-02 15:04:05", in.StorageTime)
-	fmt.Println(storeTime)
+	//fmt.Println(storeTime)
 	if err != nil {
 		return nil, err
 	}
