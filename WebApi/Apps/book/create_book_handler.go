@@ -2,7 +2,7 @@ package book
 
 import (
 	"WebApi/Pb/book"
-	"WebApi/Services"
+	"WebApi/Svc"
 	"WebApi/Utils"
 	"context"
 	"github.com/gin-gonic/gin"
@@ -24,7 +24,7 @@ func CreateBookHandler(c *gin.Context) {
 		image = "Assets/无法加载.png"
 	}
 	//fmt.Println(name, author, image, storageUserId, storageTime)
-	rep, err := Services.Grpc.BookGrpc.CreateBook(context.Background(), &book.BookBasicInfoReq{
+	rep, err := Svc.SvcContext.Grpc.BookGrpc.CreateBook(context.Background(), &book.BookBasicInfoReq{
 		Name:          name,
 		Author:        author,
 		Image:         image,

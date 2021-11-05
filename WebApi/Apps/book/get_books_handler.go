@@ -2,7 +2,7 @@ package book
 
 import (
 	"WebApi/Pb/book"
-	"WebApi/Services"
+	"WebApi/Svc"
 	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 
 func GetBookByIdHandler(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	reps, err := Services.Grpc.BookGrpc.FindOneBookById(context.Background(), &book.BookBasicInfoReq{Id: id})
+	reps, err := Svc.SvcContext.Grpc.BookGrpc.FindOneBookById(context.Background(), &book.BookBasicInfoReq{Id: id})
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -20,7 +20,7 @@ func GetBookByIdHandler(c *gin.Context) {
 }
 
 func GetAllBooksHandler(c *gin.Context) {
-	reps, err := Services.Grpc.BookGrpc.FindAllBooks(context.Background(), &book.Request{})
+	reps, err := Svc.SvcContext.Grpc.BookGrpc.FindAllBooks(context.Background(), &book.Request{})
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -34,7 +34,7 @@ func GetMyselfBooksHandler(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	reps, err := Services.Grpc.BookGrpc.FindBooksByStorageUserId(context.Background(), &book.BookBasicInfoReq{StorageUserId: storageUserId})
+	reps, err := Svc.SvcContext.Grpc.BookGrpc.FindBooksByStorageUserId(context.Background(), &book.BookBasicInfoReq{StorageUserId: storageUserId})
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return

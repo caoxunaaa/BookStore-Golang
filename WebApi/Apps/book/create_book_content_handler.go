@@ -2,7 +2,7 @@ package book
 
 import (
 	"WebApi/Pb/book"
-	"WebApi/Services"
+	"WebApi/Svc"
 	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -23,7 +23,7 @@ func CreateBookContentHandler(c *gin.Context) {
 	ChapterName := c.PostForm("chapterName")
 	ChapterContent := c.PostForm("chapterContent")
 	CreateTime := c.PostForm("createTime")
-	rep, err := Services.Grpc.BookGrpc.CreateBookContent(context.Background(), &book.BookContentReq{
+	rep, err := Svc.SvcContext.Grpc.BookGrpc.CreateBookContent(context.Background(), &book.BookContentReq{
 		BookId:         bookId,
 		ChapterNum:     chapterNum,
 		ChapterName:    ChapterName,

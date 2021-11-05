@@ -62,7 +62,7 @@ func JWTSuperuserMiddleware() func(c *gin.Context) {
 		parts := strings.Split(authHeader, ".")
 		if len(parts) != 3 {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"msg":  "请求头中auth格式有误",
+				"msg": "请求头中auth格式有误",
 			})
 			c.Abort()
 			return
@@ -71,7 +71,7 @@ func JWTSuperuserMiddleware() func(c *gin.Context) {
 		fmt.Println(mc)
 		if ok == false {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"msg":  "无效的Token",
+				"msg": "无效的Token",
 			})
 			c.Abort()
 			return
@@ -79,7 +79,7 @@ func JWTSuperuserMiddleware() func(c *gin.Context) {
 		m := mc.(jwt.MapClaims)
 		if m["username"] != "bookstoreboss" {
 			c.JSON(http.StatusForbidden, gin.H{
-				"msg":  "非超级用户",
+				"msg": "非超级用户",
 			})
 			c.Abort()
 			return

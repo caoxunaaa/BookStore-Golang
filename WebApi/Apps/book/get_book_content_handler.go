@@ -2,7 +2,7 @@ package book
 
 import (
 	"WebApi/Pb/book"
-	"WebApi/Services"
+	"WebApi/Svc"
 	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -16,7 +16,7 @@ func GetAllBookContentByBookIdHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	reps, err := Services.Grpc.BookGrpc.FindAllBookContentsByBookId(context.Background(), &book.BookContentReq{BookId: bookId})
+	reps, err := Svc.SvcContext.Grpc.BookGrpc.FindAllBookContentsByBookId(context.Background(), &book.BookContentReq{BookId: bookId})
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -37,7 +37,7 @@ func GetOneBookContentByBookIdAndChapterNumHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	rep, err := Services.Grpc.BookGrpc.FindOneBookContentByBookIdAndChapterNum(context.Background(), &book.BookContentReq{
+	rep, err := Svc.SvcContext.Grpc.BookGrpc.FindOneBookContentByBookIdAndChapterNum(context.Background(), &book.BookContentReq{
 		BookId:     bookId,
 		ChapterNum: chapterNum,
 	})

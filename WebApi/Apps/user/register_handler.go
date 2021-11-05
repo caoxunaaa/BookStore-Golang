@@ -2,7 +2,7 @@ package user
 
 import (
 	"WebApi/Pb/user"
-	"WebApi/Services"
+	"WebApi/Svc"
 	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -16,7 +16,7 @@ func RegisterHandler(c *gin.Context) {
 	email := c.DefaultPostForm("email", "")
 	phone := c.DefaultPostForm("phone", "")
 
-	rep, err := Services.Grpc.UserGrpc.Register(context.Background(), &user.RegisterReq{
+	rep, err := Svc.SvcContext.Grpc.UserGrpc.Register(context.Background(), &user.RegisterReq{
 		Username:       username,
 		Password:       password,
 		Nickname:       nickname,

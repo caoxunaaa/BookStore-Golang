@@ -6,22 +6,22 @@ import (
 	"google.golang.org/grpc"
 )
 
-var Grpc *GrpcContext
+//var Grpc *GrpcContext
 
 type GrpcContext struct {
 	UserGrpc user.UserClient
 	BookGrpc book.BookClient
 }
 
-func GrpcInit() *GrpcContext {
+func GrpcInit(c *Config) *GrpcContext {
 	var g GrpcContext
-	conn, err := grpc.Dial(C.UserRpc.Host, grpc.WithInsecure())
+	conn, err := grpc.Dial(c.UserRpc.Host, grpc.WithInsecure())
 	if err != nil {
 		return nil
 	}
 	g.UserGrpc = user.NewUserClient(conn)
 
-	conn, err = grpc.Dial(C.BookRpc.Host, grpc.WithInsecure())
+	conn, err = grpc.Dial(c.BookRpc.Host, grpc.WithInsecure())
 	if err != nil {
 		return nil
 	}

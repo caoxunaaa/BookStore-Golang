@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package action;
+
+option go_package = "action";
+
+message Request {
+  string ping = 1;
+}
+
+message Response {
+  bool ok = 1;
+  string message = 2;
+}
+
+message TrafficStatisticReq{
+  int64 id = 1;
+  int64 BookId = 2;
+  int64 ChapterNum = 3;
+  int64 TrafficNumber = 4;
+}
+
+message TrafficStatisticResp{
+  int64 id = 1;
+  int64 BookId = 2;
+  int64 ChapterNum = 3;
+  int64 TrafficNumber = 4;
+}
+
+message TrafficStatisticsResp{
+  repeated TrafficStatisticResp TrafficStatistics = 1;
+}
+
+service Action {
+  //TrafficStatistic
+  rpc GetAllTrafficStatistics(Request) returns(TrafficStatisticsResp);
+  rpc GetTrafficStatisticByBookIdAndChapterNum(TrafficStatisticReq) returns(TrafficStatisticResp);
+  rpc CreateTrafficStatistic(TrafficStatisticReq) returns(Response);
+  rpc UpdateTrafficStatistic(TrafficStatisticReq) returns(Response);
+}

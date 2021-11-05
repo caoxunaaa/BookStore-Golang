@@ -2,14 +2,14 @@ package user
 
 import (
 	"WebApi/Pb/user"
-	"WebApi/Services"
+	"WebApi/Svc"
 	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func GetAllUsersHandler(c *gin.Context) {
-	rep, err := Services.Grpc.UserGrpc.FindAllUser(context.Background(), &user.Request{})
+	rep, err := Svc.SvcContext.Grpc.UserGrpc.FindAllUser(context.Background(), &user.Request{})
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -26,7 +26,7 @@ func GetUserHandler(c *gin.Context) {
 	} else {
 		username = name.(string)
 	}
-	rep, err := Services.Grpc.UserGrpc.FindOneUserByUsername(context.Background(), &user.UsernameReq{Username: username})
+	rep, err := Svc.SvcContext.Grpc.UserGrpc.FindOneUserByUsername(context.Background(), &user.UsernameReq{Username: username})
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return

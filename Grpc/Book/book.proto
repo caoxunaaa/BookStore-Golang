@@ -62,7 +62,6 @@ message BookContentsReply{
   repeated BookContentReply book_contents_reply = 1;
 }
 
-
 service Book {
   //  book_basic_info
   rpc FindAllBooksSortedByMonth(Request) returns(BooksBasicInfoReply);

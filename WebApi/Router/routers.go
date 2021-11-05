@@ -28,7 +28,7 @@ func Init() *gin.Engine {
 		content := bookGroup.Group("/content/")
 		{
 			content.GET("/", book.GetAllBookContentByBookIdHandler)
-			content.GET("/chapterNum", book.GetOneBookContentByBookIdAndChapterNumHandler)
+			content.GET("/chapterNum", Middlewares.TrafficStatisticsMiddleware(), book.GetOneBookContentByBookIdAndChapterNumHandler)
 			content.POST("/", book.CreateBookContentHandler)
 		}
 	}

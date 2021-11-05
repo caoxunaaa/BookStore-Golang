@@ -9,3 +9,7 @@ Jwt:
   Expire: 86400
 FileStorage:
   Path: /home/book-store/BookStoreProject/WebApi/
+Redis:
+  - Host: 172.20.3.13:30020
+    PassWord: '123456'
+    Type: SingleNode

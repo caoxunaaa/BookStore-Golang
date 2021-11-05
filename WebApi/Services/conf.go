@@ -13,6 +13,7 @@ type Config struct {
 	FileStorage FileStorageConfig `yaml:"FileStorage"`
 	UserRpc     UserRpcConfig     `yaml:"UserRpc"`
 	BookRpc     BookRpcConfig     `yaml:"BookRpc"`
+	Redis       []RedisConfig     `yaml:"Redis"` //集群暂时没写，所以只写单点
 }
 
 type HostConfig struct {
@@ -34,6 +35,12 @@ type JwtConfig struct {
 
 type FileStorageConfig struct {
 	Path string `yaml:"Path"`
+}
+
+type RedisConfig struct {
+	Host     string `yaml:"Host"`
+	PassWord string `yaml:"PassWord"`
+	Type     string `yaml:"Type"`
 }
 
 func ConfigInit(path string) error {

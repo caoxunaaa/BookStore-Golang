@@ -3,6 +3,7 @@ package user
 import (
 	"WebApi/Pb/user"
 	"WebApi/Services"
+	"WebApi/Svc"
 	"context"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ func LoginHandler(c *gin.Context) {
 	phone := c.DefaultPostForm("phone", "")
 
 	ctx := context.Background()
-	rep, err := Services.Grpc.UserGrpc.Login(ctx, &user.LoginReq{
+	rep, err := Svc.SvcContext.Grpc.UserGrpc.Login(ctx, &user.LoginReq{
 		Username: username,
 		Password: password,
 		Email:    email,

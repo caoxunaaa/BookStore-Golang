@@ -3,6 +3,7 @@ package main
 import (
 	"WebApi/Router"
 	"WebApi/Services"
+	"WebApi/Svc"
 	"fmt"
 )
 
@@ -11,7 +12,7 @@ func main() {
 		fmt.Println("config file read error!")
 		return
 	}
-	Services.Grpc = Services.GrpcInit()
+	Svc.SvcContext = Svc.NewContext(Services.C)
 
 	r := Router.Init()
 	if err := r.Run(Services.C.Host.ListenOn); err != nil {
