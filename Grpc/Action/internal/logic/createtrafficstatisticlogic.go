@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"Action/model"
 	"context"
 
 	"Action/action"
@@ -24,7 +25,13 @@ func NewCreateTrafficStatisticLogic(ctx context.Context, svcCtx *svc.ServiceCont
 }
 
 func (l *CreateTrafficStatisticLogic) CreateTrafficStatistic(in *action.TrafficStatisticReq) (*action.Response, error) {
-	// todo: add your logic here and delete this line
-
-	return &action.Response{}, nil
+	_, err := l.svcCtx.TrafficStatisticModel.Insert(model.TrafficStatistic{
+		BookId:        in.BookId,
+		ChapterNum:    in.ChapterNum,
+		TrafficNumber: in.TrafficNumber,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &action.Response{Ok: true, Message: "创建成功"}, nil
 }

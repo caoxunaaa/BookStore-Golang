@@ -24,7 +24,15 @@ func NewGetTrafficStatisticByBookIdAndChapterNumLogic(ctx context.Context, svcCt
 }
 
 func (l *GetTrafficStatisticByBookIdAndChapterNumLogic) GetTrafficStatisticByBookIdAndChapterNum(in *action.TrafficStatisticReq) (*action.TrafficStatisticResp, error) {
-	// todo: add your logic here and delete this line
+	resp, err := l.svcCtx.TrafficStatisticModel.FindOneByBookIdChapterNum(in.BookId, in.ChapterNum)
+	if err != nil {
+		return nil, err
+	}
 
-	return &action.TrafficStatisticResp{}, nil
+	return &action.TrafficStatisticResp{
+		Id:            resp.Id,
+		BookId:        resp.BookId,
+		ChapterNum:    resp.ChapterNum,
+		TrafficNumber: resp.TrafficNumber,
+	}, nil
 }

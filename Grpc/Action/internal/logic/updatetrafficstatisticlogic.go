@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"Action/model"
 	"context"
 
 	"Action/action"
@@ -24,7 +25,14 @@ func NewUpdateTrafficStatisticLogic(ctx context.Context, svcCtx *svc.ServiceCont
 }
 
 func (l *UpdateTrafficStatisticLogic) UpdateTrafficStatistic(in *action.TrafficStatisticReq) (*action.Response, error) {
-	// todo: add your logic here and delete this line
-
-	return &action.Response{}, nil
+	err := l.svcCtx.TrafficStatisticModel.Update(model.TrafficStatistic{
+		Id:            in.Id,
+		BookId:        in.BookId,
+		ChapterNum:    in.ChapterNum,
+		TrafficNumber: in.TrafficNumber,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &action.Response{Ok: true, Message: "更新阅读量成功"}, nil
 }

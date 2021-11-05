@@ -29,6 +29,7 @@ type (
 		FindOneByBookIdChapterNum(bookId int64, chapterNum int64) (*TrafficStatistic, error)
 		Update(data TrafficStatistic) error
 		Delete(id int64) error
+		FindAll() ([]*TrafficStatistic, error)
 	}
 
 	defaultTrafficStatisticModel struct {

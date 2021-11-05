@@ -4,12 +4,13 @@ UserRpc:
   Host: 172.20.3.111:8080
 BookRpc:
   Host: 172.20.3.111:8081
+ActionRpc:
+  Host: 172.20.3.111:8082
 Jwt:
   Secret: Superxon
   Expire: 86400
 FileStorage:
   Path: /home/book-store/BookStoreProject/WebApi/
 Redis:
-  - Host: 172.20.3.13:30020
-    PassWord: '123456'
+  - Host: 172.20.3.234:6379
     Type: SingleNode

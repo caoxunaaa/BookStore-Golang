@@ -2,12 +2,14 @@ package Middlewares
 
 import (
 	"WebApi/Svc"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
+	"regexp"
 )
 
-var Expire int = 60 * 10
+var Expire = 10
 
 func TrafficStatisticsMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
@@ -16,7 +18,7 @@ func TrafficStatisticsMiddleware() func(c *gin.Context) {
 		//redis 出错的情况下不记录阅读量并通知工作人员
 		if repeat, err := IsRepeat(ip + url.String()); err == nil {
 			if !repeat {
-				err = TrafficStatistics(ip + url.String())
+				err = TrafficStatistics(url.String())
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -40,18 +42,27 @@ func IsRepeat(key string) (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		return ok, nil
-	} else {
-		return !ok, nil
 	}
+	//重复
+	return ok, nil
 
 }
 
 //在redis记录访问量
 func TrafficStatistics(key string) error {
-	_, err := Svc.SvcContext.Redis.Do("INCR", key)
+	re, err := regexp.Compile("[0-9]+") //解析出来哪本书哪个章节
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
-	return nil
+	res := re.FindAll([]byte(key), -1)
+	if len(res) == 2 {
+		key = "traffic_statistic:" + string(res[0]) + ":" + string(res[1])
+		_, err := Svc.SvcContext.Redis.Do("INCR", key)
+		if err != nil {
+			return err
+		}
+		return nil
+	} else {
+		return errors.New("url不是正确的格式，无法用正则表达式匹配")
+	}
 }

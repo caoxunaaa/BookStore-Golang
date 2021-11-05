@@ -31,6 +31,7 @@ func (l *FindOneBookContentByBookIdAndChapterNumLogic) FindOneBookContentByBookI
 
 	return &book.BookContentReply{
 		Id:             rep.Id,
+		BookId:         rep.BookId,
 		ChapterNum:     rep.ChapterNum,
 		ChapterName:    rep.ChapterName,
 		ChapterContent: rep.ChapterContent,

@@ -13,6 +13,7 @@ type Config struct {
 	FileStorage FileStorageConfig `yaml:"FileStorage"`
 	UserRpc     UserRpcConfig     `yaml:"UserRpc"`
 	BookRpc     BookRpcConfig     `yaml:"BookRpc"`
+	ActionRpc   ActionRpcConfig   `yaml:"ActionRpc"`
 	Redis       []RedisConfig     `yaml:"Redis"` //集群暂时没写，所以只写单点
 }
 
@@ -25,6 +26,10 @@ type BookRpcConfig struct {
 }
 
 type UserRpcConfig struct {
+	Host string `yaml:"Host"`
+}
+
+type ActionRpcConfig struct {
 	Host string `yaml:"Host"`
 }
 
