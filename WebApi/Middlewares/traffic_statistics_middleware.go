@@ -55,9 +55,11 @@ func TrafficStatistics(key string) error {
 		fmt.Println(err)
 	}
 	res := re.FindAll([]byte(key), -1)
+
+	key = "traffic_statistic"
 	if len(res) == 2 {
-		key = "traffic_statistic:" + string(res[0]) + ":" + string(res[1])
-		_, err := Svc.SvcContext.Redis.Do("INCR", key)
+		member := string(res[0]) + ":" + string(res[1])
+		_, err := Svc.SvcContext.Redis.Do("ZINCRBY", key, 1, member)
 		if err != nil {
 			return err
 		}

@@ -2,9 +2,9 @@
   <div id="content_overview_paging">
     <div style="width: 60%; display: flex; flex-wrap: wrap; flex-direction: column;">
       <div class="list" :key="key" v-for="(content_display,key) in contents_display" style="width: 14%;margin: 0 3%">
-          <el-tag type="success" style="margin: 3px" @click="drawer = true;selectContent(content_display.ChapterContent)">
-            第{{ content_display.ChapterNum }}章 {{ content_display.ChapterName }} <i
-            class="el-icon-time">{{ content_display.CreateTime }}</i>
+          <el-tag type="success" style="margin: 3px" @click="drawer = true;selectContent(content_display.ChapterNum)">
+            第{{ content_display.ChapterNum }}章 {{ content_display.ChapterName }}
+            <i class="el-icon-time">{{ content_display.CreateTime }}</i>
           </el-tag>
       </div>
     </div>
@@ -85,8 +85,23 @@ export default {
         this.contents_display = this.contents.slice(20 * (page - 1), 20 * page)
       }
     },
-    selectContent (text) {
-      this.body_content = text
+    selectContent (chapterNum) {
+      let that = this
+      that.$axios({
+        method: 'get',
+        url: '/api/book/content/chapterNum',
+        params: {
+          bookId: this.book_id,
+          chapterNum: chapterNum
+        }
+      }).then(function (response) {
+        const res = response.data
+        console.log(res)
+        that.body_content = res.chapter_content
+      }).catch(function (error) {
+        console.log(error)
+        alert('暂无内容')
+      })
     }
   }
 }

@@ -14,6 +14,6 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:                c,
-		TrafficStatisticModel: model.NewTrafficStatisticModel(sqlx.NewMysql(c.Mysql.DataSource), c.CacheRedis),
+		TrafficStatisticModel: model.NewTrafficStatisticModel(sqlx.NewMysql(c.Mysql.DataSource)),
 	}
 }

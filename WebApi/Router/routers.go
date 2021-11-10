@@ -1,6 +1,7 @@
 package Router
 
 import (
+	"WebApi/Apps/action"
 	"WebApi/Apps/book"
 	"WebApi/Apps/user"
 	"WebApi/Middlewares"
@@ -31,6 +32,16 @@ func Init() *gin.Engine {
 			content.GET("/chapterNum", Middlewares.TrafficStatisticsMiddleware(), book.GetOneBookContentByBookIdAndChapterNumHandler)
 			content.POST("/", book.CreateBookContentHandler)
 		}
+	}
+	actionGroup := r.Group("/action/")
+	{
+		trafficStatisticGroup := actionGroup.Group("/traffic-statistic/")
+		{
+			trafficStatisticGroup.GET("/by-bookId-and-chapterNum", action.GetTrafficStatisticByBookIdAndChapterNumHandler)
+			trafficStatisticGroup.GET("/by-bookId", action.GetAllTrafficStatisticHandlerByBookId)
+			trafficStatisticGroup.GET("/", action.GetAllTrafficStatisticHandler)
+		}
+
 	}
 	return r
 }
