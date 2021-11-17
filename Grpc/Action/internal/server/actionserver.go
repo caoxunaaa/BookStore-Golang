@@ -15,10 +15,6 @@ type ActionServer struct {
 	svcCtx *svc.ServiceContext
 }
 
-func (s *ActionServer) Ping(ctx context.Context, request *action.Request) (*action.Response, error) {
-	panic("implement me")
-}
-
 func NewActionServer(svcCtx *svc.ServiceContext) *ActionServer {
 	return &ActionServer{
 		svcCtx: svcCtx,
@@ -44,4 +40,25 @@ func (s *ActionServer) CreateTrafficStatistic(ctx context.Context, in *action.Tr
 func (s *ActionServer) UpdateTrafficStatistic(ctx context.Context, in *action.TrafficStatisticReq) (*action.Response, error) {
 	l := logic.NewUpdateTrafficStatisticLogic(ctx, s.svcCtx)
 	return l.UpdateTrafficStatistic(in)
+}
+
+// Comments
+func (s *ActionServer) GetCommentsByBookContentId(ctx context.Context, in *action.CommentReq) (*action.CommentsTreeResp, error) {
+	l := logic.NewGetCommentsByBookContentIdLogic(ctx, s.svcCtx)
+	return l.GetCommentsByBookContentId(in)
+}
+
+func (s *ActionServer) CreateComment(ctx context.Context, in *action.CommentReq) (*action.Response, error) {
+	l := logic.NewCreateCommentLogic(ctx, s.svcCtx)
+	return l.CreateComment(in)
+}
+
+func (s *ActionServer) UpdateComment(ctx context.Context, in *action.CommentReq) (*action.Response, error) {
+	l := logic.NewUpdateCommentLogic(ctx, s.svcCtx)
+	return l.UpdateComment(in)
+}
+
+func (s *ActionServer) DeleteComment(ctx context.Context, in *action.CommentReq) (*action.Response, error) {
+	l := logic.NewDeleteCommentLogic(ctx, s.svcCtx)
+	return l.DeleteComment(in)
 }

@@ -13,6 +13,10 @@ import (
 )
 
 type (
+	CommentReq            = action.CommentReq
+	CommentResp           = action.CommentResp
+	CommentsNodeResp      = action.CommentsNodeResp
+	CommentsTreeResp      = action.CommentsTreeResp
 	Request               = action.Request
 	Response              = action.Response
 	TrafficStatisticReq   = action.TrafficStatisticReq
@@ -25,6 +29,11 @@ type (
 		GetTrafficStatisticByBookIdAndChapterNum(ctx context.Context, in *TrafficStatisticReq, opts ...grpc.CallOption) (*TrafficStatisticResp, error)
 		CreateTrafficStatistic(ctx context.Context, in *TrafficStatisticReq, opts ...grpc.CallOption) (*Response, error)
 		UpdateTrafficStatistic(ctx context.Context, in *TrafficStatisticReq, opts ...grpc.CallOption) (*Response, error)
+		// Comments
+		GetCommentsByBookContentId(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*CommentsTreeResp, error)
+		CreateComment(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*Response, error)
+		UpdateComment(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*Response, error)
+		DeleteComment(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*Response, error)
 	}
 
 	defaultAction struct {
@@ -57,4 +66,25 @@ func (m *defaultAction) CreateTrafficStatistic(ctx context.Context, in *TrafficS
 func (m *defaultAction) UpdateTrafficStatistic(ctx context.Context, in *TrafficStatisticReq, opts ...grpc.CallOption) (*Response, error) {
 	client := action.NewActionClient(m.cli.Conn())
 	return client.UpdateTrafficStatistic(ctx, in, opts...)
+}
+
+// Comments
+func (m *defaultAction) GetCommentsByBookContentId(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*CommentsTreeResp, error) {
+	client := action.NewActionClient(m.cli.Conn())
+	return client.GetCommentsByBookContentId(ctx, in, opts...)
+}
+
+func (m *defaultAction) CreateComment(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*Response, error) {
+	client := action.NewActionClient(m.cli.Conn())
+	return client.CreateComment(ctx, in, opts...)
+}
+
+func (m *defaultAction) UpdateComment(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*Response, error) {
+	client := action.NewActionClient(m.cli.Conn())
+	return client.UpdateComment(ctx, in, opts...)
+}
+
+func (m *defaultAction) DeleteComment(ctx context.Context, in *CommentReq, opts ...grpc.CallOption) (*Response, error) {
+	client := action.NewActionClient(m.cli.Conn())
+	return client.DeleteComment(ctx, in, opts...)
 }

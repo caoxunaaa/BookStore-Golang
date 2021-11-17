@@ -9,11 +9,14 @@ import (
 type ServiceContext struct {
 	Config                config.Config
 	TrafficStatisticModel model.TrafficStatisticModel
+	CommentModel          model.CommentModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	conn := sqlx.NewMysql(c.Mysql.DataSource)
 	return &ServiceContext{
 		Config:                c,
-		TrafficStatisticModel: model.NewTrafficStatisticModel(sqlx.NewMysql(c.Mysql.DataSource)),
+		TrafficStatisticModel: model.NewTrafficStatisticModel(conn),
+		CommentModel:          model.NewCommentModel(conn),
 	}
 }

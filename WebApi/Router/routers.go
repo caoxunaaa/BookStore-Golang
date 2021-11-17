@@ -41,7 +41,10 @@ func Init() *gin.Engine {
 			trafficStatisticGroup.GET("/by-bookId", action.GetAllTrafficStatisticHandlerByBookId)
 			trafficStatisticGroup.GET("/", action.GetAllTrafficStatisticHandler)
 		}
-
+		commentGroup := actionGroup.Group("/comment/")
+		{
+			commentGroup.GET("/by-book-content-id", action.GetCommentsByBookContentIdHandler)
+		}
 	}
 	return r
 }

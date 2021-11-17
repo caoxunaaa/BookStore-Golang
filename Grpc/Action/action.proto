@@ -31,10 +31,43 @@ message TrafficStatisticsResp{
   repeated TrafficStatisticResp TrafficStatistics = 1;
 }
 
+message CommentReq{
+  int64 Id = 1;
+  int64 ParentId = 2;
+  int64 BookContentId = 3;
+  string Comment = 4;
+  int64 CommentByUserId = 5;
+  int64 CommentToUserId = 6;
+}
+
+message CommentResp{
+  int64 Id = 1;
+  int64 ParentId = 2;
+  int64 BookContentId = 3;
+  string Comment = 4;
+  int64 CommentByUserId = 5;
+  int64 CommentToUserId = 6;
+}
+
+message CommentsNodeResp{
+  CommentResp Comments = 1;
+  repeated CommentsNodeResp CommentsNode = 2;
+}
+
+message CommentsTreeResp{
+  repeated CommentsNodeResp CommentsTree = 1;
+}
+
 service Action {
   //TrafficStatistic
   rpc GetAllTrafficStatistics(Request) returns(TrafficStatisticsResp);
   rpc GetTrafficStatisticByBookIdAndChapterNum(TrafficStatisticReq) returns(TrafficStatisticResp);
   rpc CreateTrafficStatistic(TrafficStatisticReq) returns(Response);
   rpc UpdateTrafficStatistic(TrafficStatisticReq) returns(Response);
+
+  //Comments
+  rpc GetCommentsByBookContentId(CommentReq) returns(CommentsTreeResp);
+  rpc CreateComment(CommentReq) returns(Response);
+  rpc UpdateComment(CommentReq) returns(Response);
+  rpc DeleteComment(CommentReq) returns(Response);
 }

@@ -26,7 +26,6 @@ func TrafficStatisticsMiddleware() func(c *gin.Context) {
 		} else {
 			fmt.Println(err)
 		}
-
 		c.Next()
 	}
 }
