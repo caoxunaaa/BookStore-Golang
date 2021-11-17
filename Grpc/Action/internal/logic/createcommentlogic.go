@@ -26,11 +26,13 @@ func NewCreateCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 
 func (l *CreateCommentLogic) CreateComment(in *action.CommentReq) (*action.Response, error) {
 	_, err := l.svcCtx.CommentModel.Insert(model.Comment{
-		ParentId:        in.ParentId,
-		BookContentId:   in.ParentId,
-		Comment:         in.Comment,
-		CommentToUserId: in.CommentToUserId,
-		CommentByUserId: in.CommentByUserId,
+		ParentId:          in.ParentId,
+		BookContentId:     in.BookContentId,
+		Comment:           in.Comment,
+		CommentToUserId:   in.CommentToUserId,
+		CommentToNickname: in.CommentToNickname,
+		CommentByUserId:   in.CommentByUserId,
+		CommentByNickname: in.CommentByNickname,
 	})
 	if err != nil {
 		return nil, err

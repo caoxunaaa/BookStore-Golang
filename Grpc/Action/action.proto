@@ -37,7 +37,9 @@ message CommentReq{
   int64 BookContentId = 3;
   string Comment = 4;
   int64 CommentByUserId = 5;
-  int64 CommentToUserId = 6;
+  string CommentByNickname = 6;
+  int64 CommentToUserId = 7;
+  string CommentToNickname = 8;
 }
 
 message CommentResp{
@@ -46,7 +48,9 @@ message CommentResp{
   int64 BookContentId = 3;
   string Comment = 4;
   int64 CommentByUserId = 5;
-  int64 CommentToUserId = 6;
+  string CommentByNickname = 6;
+  int64 CommentToUserId = 7;
+  string CommentToNickname = 8;
 }
 
 message CommentsNodeResp{

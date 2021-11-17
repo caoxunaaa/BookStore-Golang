@@ -20,7 +20,7 @@ func GetCommentsByBookContentIdHandler(c *gin.Context) {
 	res, err := Svc.SvcContext.Grpc.ActionGrpc.GetCommentsByBookContentId(ctx, &action.CommentReq{
 		BookContentId: bookContentId,
 	})
-	//树状结构 平铺为 只有父子节点结构（评论)
+	//树状结构 平铺为 只有父子节点结构（评论)  方便前端使用
 	tn := func(t *action.CommentsTreeResp) action.CommentsTreeResp {
 		var tree = action.CommentsTreeResp{}
 		for i := 0; i < len(t.CommentsTree); i++ {
@@ -29,7 +29,7 @@ func GetCommentsByBookContentIdHandler(c *gin.Context) {
 				Comments: t.CommentsTree[i].Comments,
 			})
 			//组合父节点下所有的节点
-			comb(t.CommentsTree[i].CommentsNode, &tree.CommentsTree[i].CommentsNode)
+			combChildComment(t.CommentsTree[i].CommentsNode, &tree.CommentsTree[i].CommentsNode)
 		}
 		return tree
 	}
@@ -41,13 +41,13 @@ func GetCommentsByBookContentIdHandler(c *gin.Context) {
 	}
 }
 
-func comb(src []*action.CommentsNodeResp, dest *[]*action.CommentsNodeResp) {
+func combChildComment(src []*action.CommentsNodeResp, dest *[]*action.CommentsNodeResp) {
 	for i := 0; i < len(src); i++ {
 		*dest = append(*dest, &action.CommentsNodeResp{
 			Comments: src[i].Comments,
 		})
 		if src[i].CommentsNode != nil {
-			comb(src[i].CommentsNode, dest)
+			combChildComment(src[i].CommentsNode, dest)
 		}
 	}
 

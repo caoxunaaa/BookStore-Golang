@@ -33,12 +33,14 @@ type (
 	}
 
 	Comment struct {
-		Id              int64  `db:"id"`
-		ParentId        int64  `db:"parent_id"`
-		BookContentId   int64  `db:"book_content_id"`
-		Comment         string `db:"comment"`
-		CommentByUserId int64  `db:"comment_by_user_id"` // 评论者
-		CommentToUserId int64  `db:"comment_to_user_id"` // 被评论者
+		Id                int64  `db:"id"`
+		ParentId          int64  `db:"parent_id"`
+		BookContentId     int64  `db:"book_content_id"`
+		Comment           string `db:"comment"`
+		CommentByUserId   int64  `db:"comment_by_user_id"`  // 评论者
+		CommentByNickname string `db:"comment_by_nickname"` // 评论者
+		CommentToUserId   int64  `db:"comment_to_user_id"`  // 被评论者
+		CommentToNickname string `db:"comment_to_nickname"` // 被评论者
 	}
 )
 
@@ -50,8 +52,8 @@ func NewCommentModel(conn sqlx.SqlConn) CommentModel {
 }
 
 func (m *defaultCommentModel) Insert(data Comment) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, commentRowsExpectAutoSet)
-	ret, err := m.conn.Exec(query, data.ParentId, data.BookContentId, data.Comment, data.CommentByUserId, data.CommentToUserId)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, commentRowsExpectAutoSet)
+	ret, err := m.conn.Exec(query, data.ParentId, data.BookContentId, data.Comment, data.CommentByUserId, data.CommentByNickname, data.CommentToUserId, data.CommentToNickname)
 	return ret, err
 }
 
@@ -71,7 +73,7 @@ func (m *defaultCommentModel) FindOne(id int64) (*Comment, error) {
 
 func (m *defaultCommentModel) Update(data Comment) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, commentRowsWithPlaceHolder)
-	_, err := m.conn.Exec(query, data.ParentId, data.BookContentId, data.Comment, data.CommentByUserId, data.CommentToUserId, data.Id)
+	_, err := m.conn.Exec(query, data.ParentId, data.BookContentId, data.Comment, data.CommentByUserId, data.CommentByNickname, data.CommentToUserId, data.CommentToNickname, data.Id)
 	return err
 }
 

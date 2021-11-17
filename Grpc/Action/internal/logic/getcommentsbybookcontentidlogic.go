@@ -42,12 +42,14 @@ func (l *GetCommentsByBookContentIdLogic) GetCommentsByBookContentId(in *action.
 			if cs[i].ParentId == 0 {
 				res.CommentsTree = append(res.CommentsTree, &action.CommentsNodeResp{
 					Comments: &action.CommentResp{
-						Id:              cs[i].Id,
-						ParentId:        cs[i].ParentId,
-						BookContentId:   cs[i].BookContentId,
-						Comment:         cs[i].Comment,
-						CommentByUserId: cs[i].CommentByUserId,
-						CommentToUserId: cs[i].CommentToUserId,
+						Id:                cs[i].Id,
+						ParentId:          cs[i].ParentId,
+						BookContentId:     cs[i].BookContentId,
+						Comment:           cs[i].Comment,
+						CommentByUserId:   cs[i].CommentByUserId,
+						CommentByNickname: cs[i].CommentByNickname,
+						CommentToUserId:   cs[i].CommentToUserId,
+						CommentToNickname: cs[i].CommentToNickname,
 					},
 				})
 			} else {
@@ -55,12 +57,14 @@ func (l *GetCommentsByBookContentIdLogic) GetCommentsByBookContentId(in *action.
 				if node != nil {
 					node.CommentsNode = append(node.CommentsNode, &action.CommentsNodeResp{
 						Comments: &action.CommentResp{
-							Id:              cs[i].Id,
-							ParentId:        cs[i].ParentId,
-							BookContentId:   cs[i].BookContentId,
-							Comment:         cs[i].Comment,
-							CommentByUserId: cs[i].CommentByUserId,
-							CommentToUserId: cs[i].CommentToUserId,
+							Id:                cs[i].Id,
+							ParentId:          cs[i].ParentId,
+							BookContentId:     cs[i].BookContentId,
+							Comment:           cs[i].Comment,
+							CommentByUserId:   cs[i].CommentByUserId,
+							CommentByNickname: cs[i].CommentByNickname,
+							CommentToUserId:   cs[i].CommentToUserId,
+							CommentToNickname: cs[i].CommentToNickname,
 						},
 					})
 				}

@@ -44,6 +44,7 @@ func Init() *gin.Engine {
 		commentGroup := actionGroup.Group("/comment/")
 		{
 			commentGroup.GET("/by-book-content-id", action.GetCommentsByBookContentIdHandler)
+			commentGroup.POST("/", action.CreateCommentHandler)
 		}
 	}
 	return r

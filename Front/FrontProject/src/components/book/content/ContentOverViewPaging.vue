@@ -2,7 +2,7 @@
   <div id="content_overview_paging">
     <div style="width: 60%; display: flex; flex-wrap: wrap; flex-direction: column;">
       <div class="list" :key="key" v-for="(content_display,key) in contents_display" style="width: 14%;margin: 0 3%">
-          <el-tag type="success" style="margin: 3px" @click="drawer = true;selectContent(content_display.ChapterNum)">
+          <el-tag type="success" style="margin: 3px" @click="selectContent(content_display.ChapterNum)">
             第{{ content_display.ChapterNum }}章 {{ content_display.ChapterName }}
             <i class="el-icon-time">{{ content_display.CreateTime }}</i>
           </el-tag>
@@ -20,14 +20,17 @@
       :visible.sync="drawer"
       :with-header="false"
       v-if="drawer" :size="size">
-      <div style="white-space: pre-wrap;text-align: left">{{body_content}}</div>
+      <div style="white-space: pre-wrap;text-align: left;height: 65%;overflow: auto">{{body_content}}</div>
+      <Comment :contentId="contentId"></Comment>
     </el-drawer>
   </div>
 </template>
 
 <script>
+import Comment from '@/components/action/comment'
 export default {
   name: 'ContentOverViewPaging',
+  components: {Comment},
   props: [
     'book_id'
   ],
@@ -39,7 +42,8 @@ export default {
       pageSize: 20,
       body_content: '',
       drawer: false,
-      size: '80%'
+      size: '80%',
+      contentId: 0
     }
   },
   mounted () {
@@ -98,6 +102,8 @@ export default {
         const res = response.data
         console.log(res)
         that.body_content = res.chapter_content
+        that.contentId = res.id
+        that.drawer = true
       }).catch(function (error) {
         console.log(error)
         alert('暂无内容')
