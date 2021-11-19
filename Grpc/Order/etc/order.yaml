@@ -1,0 +1,7 @@
+Name: order.rpc
+ListenOn: 0.0.0.0:8083
+Mysql:
+  DataSource: bookstore:bookstore@tcp(172.20.3.12:3306)/bs-order?parseTime=true
+CacheRedis:
+  - Host: 172.20.3.234:6379
+    Type: node

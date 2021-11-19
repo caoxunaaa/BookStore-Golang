@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "order";
+
+message Request {
+  string ping = 1;
+}
+
+message Response {
+  bool ok = 1;
+  string message = 2;
+}
+
+message OrderGoods{
+  int64 id = 1;
+  string orderNum = 2;
+  int64 bookId = 3;
+  int64 Count = 4;
+}
+
+message OrderInfoReq{
+  int64 id = 1;
+  int64 buyerId = 2;
+  string orderNum = 3;
+  string createTime = 4;
+  int64 cost = 5;
+  bool isPaid = 6;
+  string orderStatus = 7;
+  repeated OrderGoods goods = 8;
+}
+
+message OrderInfoResp{
+  int64 id = 1;
+  int64 buyerId = 2;
+  string orderNum = 3;
+  string createTime = 4;
+  int64 cost = 5;
+  bool isPaid = 6;
+  string orderStatus = 7;
+  repeated OrderGoods goods = 8;
+}
+
+message OrderInfosResp{
+  repeated OrderInfoResp OrderInfos = 1;
+}
+
+
+service Order {
+  rpc GetOrderInfoByOrderNum(OrderInfoReq) returns (OrderInfoResp);
+  rpc CreateOrderInfo(OrderInfoReq) returns(Response);
+  rpc UpdateOrderInfo(OrderInfoReq) returns(Response);
+}
