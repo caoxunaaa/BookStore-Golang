@@ -14,3 +14,9 @@ FileStorage:
 Redis:
   - Host: 172.20.3.234:6379
     Type: SingleNode
+Kafka:
+  Host:
+    - 172.20.3.13:30901
+    - 172.20.3.13:30902
+    - 172.20.3.13:30903
+  OrderTopic: Order
