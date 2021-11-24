@@ -11,11 +11,4 @@ type Config struct {
 		DataSource string
 	}
 	CacheRedis cache.CacheConf
-	Kafka      KafkaConf
-}
-
-type KafkaConf struct {
-	Host  []string
-	Topic string
-	Key   string
 }

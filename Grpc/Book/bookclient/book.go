@@ -18,7 +18,10 @@ type (
 	BookContentReply    = book.BookContentReply
 	BookContentReq      = book.BookContentReq
 	BookContentsReply   = book.BookContentsReply
+	BookInventoryReq    = book.BookInventoryReq
+	BookInventoryResp   = book.BookInventoryResp
 	BooksBasicInfoReply = book.BooksBasicInfoReply
+	BooksInventoryResp  = book.BooksInventoryResp
 	Reply               = book.Reply
 	Request             = book.Request
 	UsernameReq         = book.UsernameReq
@@ -39,6 +42,11 @@ type (
 		CreateBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error)
 		DeleteBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error)
 		UpdateBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error)
+		//  book_inventory
+		FindAllBookInventory(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*BooksInventoryResp, error)
+		FindBookInventoryByBookId(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*BookInventoryResp, error)
+		CreateBookInventory(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*Reply, error)
+		UpdateBookInventory(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*Reply, error)
 	}
 
 	defaultBook struct {
@@ -117,4 +125,25 @@ func (m *defaultBook) DeleteBookContent(ctx context.Context, in *BookContentReq,
 func (m *defaultBook) UpdateBookContent(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*Reply, error) {
 	client := book.NewBookClient(m.cli.Conn())
 	return client.UpdateBookContent(ctx, in, opts...)
+}
+
+//  book_inventory
+func (m *defaultBook) FindAllBookInventory(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*BooksInventoryResp, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.FindAllBookInventory(ctx, in, opts...)
+}
+
+func (m *defaultBook) FindBookInventoryByBookId(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*BookInventoryResp, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.FindBookInventoryByBookId(ctx, in, opts...)
+}
+
+func (m *defaultBook) CreateBookInventory(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*Reply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.CreateBookInventory(ctx, in, opts...)
+}
+
+func (m *defaultBook) UpdateBookInventory(ctx context.Context, in *BookInventoryReq, opts ...grpc.CallOption) (*Reply, error) {
+	client := book.NewBookClient(m.cli.Conn())
+	return client.UpdateBookInventory(ctx, in, opts...)
 }

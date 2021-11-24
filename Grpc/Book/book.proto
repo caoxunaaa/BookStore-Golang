@@ -58,9 +58,27 @@ message BookContentReply{
   string chapter_content = 5;
   string create_time = 6;
 }
+
 message BookContentsReply{
   repeated BookContentReply book_contents_reply = 1;
 }
+
+message BookInventoryReq{
+  int64 id=1;
+  int64 book_id=2;
+  int64 inventory=3;
+}
+
+message BookInventoryResp{
+  int64 id=1;
+  int64 book_id=2;
+  int64 inventory=3;
+}
+
+message BooksInventoryResp{
+  repeated BookInventoryResp books_inventory_resp = 1;
+}
+
 
 service Book {
   //  book_basic_info
@@ -71,10 +89,10 @@ service Book {
 
   rpc FindOneBookById(BookBasicInfoReq) returns(BookBasicInfoReply);
 
-
   rpc CreateBook(BookBasicInfoReq) returns(Reply);
   rpc DeleteBook(BookBasicInfoReq) returns(Reply);
   rpc UpdateUser(BookBasicInfoReq) returns(Reply);
+
   //  book_content
   rpc FindAllBookContentsByBookId(BookContentReq) returns(BookContentsReply);
 
@@ -83,4 +101,12 @@ service Book {
   rpc CreateBookContent(BookContentReq) returns(Reply);
   rpc DeleteBookContent(BookContentReq) returns(Reply);
   rpc UpdateBookContent(BookContentReq) returns(Reply);
+
+  // book_inventory
+  rpc FindAllBookInventory(BookInventoryReq) returns(BooksInventoryResp);
+
+  rpc FindBookInventoryByBookId(BookInventoryReq) returns(BookInventoryResp);
+
+  rpc CreateBookInventory(BookInventoryReq) returns(Reply);
+  rpc UpdateBookInventory(BookInventoryReq) returns(Reply);
 }

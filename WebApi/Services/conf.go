@@ -14,7 +14,9 @@ type Config struct {
 	UserRpc     UserRpcConfig     `yaml:"UserRpc"`
 	BookRpc     BookRpcConfig     `yaml:"BookRpc"`
 	ActionRpc   ActionRpcConfig   `yaml:"ActionRpc"`
+	OrderRpc    OrderRpcConfig    `yaml:"OrderRpc"`
 	Redis       []RedisConfig     `yaml:"Redis"` //集群暂时没写，所以只写单点
+	Kafka       KafkaConf         `yaml:"Kafka"`
 }
 
 type HostConfig struct {
@@ -33,6 +35,10 @@ type ActionRpcConfig struct {
 	Host string `yaml:"Host"`
 }
 
+type OrderRpcConfig struct {
+	Host string `yaml:"Host"`
+}
+
 type JwtConfig struct {
 	Secret string `yaml:"Secret"`
 	Expire int64  `yaml:"Expire"`
@@ -46,6 +52,14 @@ type RedisConfig struct {
 	Host     string `yaml:"Host"`
 	PassWord string `yaml:"PassWord"`
 	Type     string `yaml:"Type"`
+}
+
+type KafkaConf struct {
+	Host  []string `yaml:"Host"`
+	Order struct {
+		Topic string `yaml:"Topic"`
+		Key   string `yaml:"Key"`
+	} `yaml:"Order"`
 }
 
 func ConfigInit(path string) error {

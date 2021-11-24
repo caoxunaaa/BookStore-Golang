@@ -87,3 +87,24 @@ func (s *BookServer) UpdateBookContent(ctx context.Context, in *book.BookContent
 	l := logic.NewUpdateBookContentLogic(ctx, s.svcCtx)
 	return l.UpdateBookContent(in)
 }
+
+//  book_inventory
+func (s *BookServer) FindAllBookInventory(ctx context.Context, in *book.BookInventoryReq) (*book.BooksInventoryResp, error) {
+	l := logic.NewFindAllBookInventoryLogic(ctx, s.svcCtx)
+	return l.FindAllBookInventory(in)
+}
+
+func (s *BookServer) FindBookInventoryByBookId(ctx context.Context, in *book.BookInventoryReq) (*book.BookInventoryResp, error) {
+	l := logic.NewFindBookInventoryByBookIdLogic(ctx, s.svcCtx)
+	return l.FindBookInventoryByBookId(in)
+}
+
+func (s *BookServer) CreateBookInventory(ctx context.Context, in *book.BookInventoryReq) (*book.Reply, error) {
+	l := logic.NewCreateBookInventoryLogic(ctx, s.svcCtx)
+	return l.CreateBookInventory(in)
+}
+
+func (s *BookServer) UpdateBookInventory(ctx context.Context, in *book.BookInventoryReq) (*book.Reply, error) {
+	l := logic.NewUpdateBookInventoryLogic(ctx, s.svcCtx)
+	return l.UpdateBookInventory(in)
+}

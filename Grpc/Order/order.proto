@@ -49,6 +49,8 @@ message OrderInfosResp{
 
 service Order {
   rpc GetOrderInfoByOrderNum(OrderInfoReq) returns (OrderInfoResp);
+  rpc GetOrderStatusByOrderNum(OrderInfoReq) returns (OrderInfoResp);
+
   rpc CreateOrderInfo(OrderInfoReq) returns(Response);
   rpc UpdateOrderInfo(OrderInfoReq) returns(Response);
 }

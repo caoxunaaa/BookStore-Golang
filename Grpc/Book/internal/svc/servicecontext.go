@@ -10,6 +10,7 @@ type ServiceContext struct {
 	Config             config.Config
 	BookBasicInfoModel model.BookBasicInfoModel
 	BookContentModel   model.BookContentModel
+	BookInventoryModel model.BookInventoryModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -18,5 +19,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:             c,
 		BookBasicInfoModel: model.NewBookBasicInfoModel(con, c.CacheRedis),
 		BookContentModel:   model.NewBookContentModel(con, c.CacheRedis),
+		BookInventoryModel: model.NewBookInventoryModel(con, c.CacheRedis),
 	}
 }

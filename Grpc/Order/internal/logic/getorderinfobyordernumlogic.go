@@ -24,7 +24,15 @@ func NewGetOrderInfoByOrderNumLogic(ctx context.Context, svcCtx *svc.ServiceCont
 }
 
 func (l *GetOrderInfoByOrderNumLogic) GetOrderInfoByOrderNum(in *order.OrderInfoReq) (*order.OrderInfoResp, error) {
-	// todo: add your logic here and delete this line
+	//orderInfo, err := l.svcCtx.OrderInfoModel.FindOneByOrderNum(in.OrderNum)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//orderGoods, err := l.svcCtx.OrderGoodsModel.FindGoodsByOrderNum(in.OrderNum)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	return &order.OrderInfoResp{}, nil
 }

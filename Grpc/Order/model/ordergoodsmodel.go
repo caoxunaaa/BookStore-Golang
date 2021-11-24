@@ -27,6 +27,7 @@ type (
 		FindOne(id int64) (*OrderGoods, error)
 		Update(data OrderGoods) error
 		Delete(id int64) error
+		FindGoodsByOrderNum(orderNum string) ([]*OrderGoods, error)
 	}
 
 	defaultOrderGoodsModel struct {

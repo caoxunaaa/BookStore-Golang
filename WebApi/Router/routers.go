@@ -32,6 +32,12 @@ func Init() *gin.Engine {
 			content.GET("/chapterNum", Middlewares.TrafficStatisticsMiddleware(), book.GetOneBookContentByBookIdAndChapterNumHandler)
 			content.POST("/", book.CreateBookContentHandler)
 		}
+		inventory := bookGroup.Group("/inventory/")
+		{
+			inventory.GET("/bookId/:bookId", book.GetBookInventoryByBookIdHandler)
+			inventory.POST("/", book.CreateBookInventoryHandler)
+			inventory.PUT("/:id", book.UpdateBookInventoryHandler)
+		}
 	}
 	actionGroup := r.Group("/action/")
 	{

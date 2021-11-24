@@ -22,6 +22,7 @@ type (
 
 	Order interface {
 		GetOrderInfoByOrderNum(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*OrderInfoResp, error)
+		GetOrderStatusByOrderNum(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*OrderInfoResp, error)
 		CreateOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error)
 		UpdateOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error)
 	}
@@ -40,6 +41,11 @@ func NewOrder(cli zrpc.Client) Order {
 func (m *defaultOrder) GetOrderInfoByOrderNum(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*OrderInfoResp, error) {
 	client := order.NewOrderClient(m.cli.Conn())
 	return client.GetOrderInfoByOrderNum(ctx, in, opts...)
+}
+
+func (m *defaultOrder) GetOrderStatusByOrderNum(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*OrderInfoResp, error) {
+	client := order.NewOrderClient(m.cli.Conn())
+	return client.GetOrderStatusByOrderNum(ctx, in, opts...)
 }
 
 func (m *defaultOrder) CreateOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error) {
