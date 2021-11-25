@@ -1,7 +1,9 @@
 package logic
 
 import (
+	"Order/model"
 	"context"
+	"time"
 
 	"Order/internal/svc"
 	"Order/order"
@@ -24,7 +26,24 @@ func NewUpdateOrderInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *U
 }
 
 func (l *UpdateOrderInfoLogic) UpdateOrderInfo(in *order.OrderInfoReq) (*order.Response, error) {
-	// todo: add your logic here and delete this line
+	var isPaid int64
+	if in.IsPaid {
+		isPaid = 1
+	} else {
+		isPaid = 0
+	}
 
-	return &order.Response{}, nil
+	err := l.svcCtx.OrderInfoModel.Update(model.OrderInfo{
+		Id:          in.Id,
+		BuyerId:     in.BuyerId,
+		OrderNum:    in.OrderNum,
+		CreateTime:  time.Now(),
+		Cost:        in.Cost,
+		IsPaid:      isPaid,
+		OrderStatus: in.OrderStatus,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &order.Response{Ok: true, Message: "修改订单状态成功"}, nil
 }

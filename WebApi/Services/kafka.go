@@ -4,10 +4,6 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-type KafkaHandler interface {
-	Push(c *Config, mes string) (partition int32, offset int64, err error)
-}
-
 type KafkaContext struct {
 	Producer sarama.SyncProducer
 	Consumer sarama.Consumer
@@ -20,16 +16,7 @@ func NewKafka(c *Config) *KafkaContext {
 	}
 }
 
-func (m *KafkaContext) Push(topic, key, mes string) (partition int32, offset int64, err error) {
-	msg := &sarama.ProducerMessage{
-		Topic: topic,
-		Key:   sarama.StringEncoder(key),
-		Value: sarama.StringEncoder(mes),
-	}
-	return m.Producer.SendMessage(msg)
-}
-
-//Sync
+//Sync Hash
 func NewKafkaProducer(c *Config) sarama.SyncProducer {
 	kConfig := sarama.NewConfig()
 	kConfig.Producer.RequiredAcks = sarama.WaitForAll //赋值为-1：这意味着producer在follower副本确认接收到数据后才算一次发送完成。

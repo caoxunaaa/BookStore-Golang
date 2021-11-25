@@ -18,10 +18,11 @@ type ServiceContext struct {
 func NewContext(c *Services.Config) *ServiceContext {
 	grpc := Services.GrpcInit(c)
 	conn := Databases.RedisInit(c)
+	kafka := Services.NewKafka(c)
 	return &ServiceContext{
 		Grpc:  grpc,
 		Redis: conn,
-		Model: Services.NewModel(grpc, conn),
-		Kafka: Services.NewKafka(c),
+		Kafka: kafka,
+		Model: Services.NewModel(grpc.OrderGrpc, conn, kafka),
 	}
 }
