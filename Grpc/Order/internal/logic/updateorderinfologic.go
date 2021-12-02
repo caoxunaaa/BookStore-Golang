@@ -37,10 +37,11 @@ func (l *UpdateOrderInfoLogic) UpdateOrderInfo(in *order.OrderInfoReq) (*order.R
 		Id:          in.Id,
 		BuyerId:     in.BuyerId,
 		OrderNum:    in.OrderNum,
-		CreateTime:  time.Now(),
+		OrderTime:   time.Now(),
 		Cost:        in.Cost,
 		IsPaid:      isPaid,
 		OrderStatus: in.OrderStatus,
+		BookId:      in.BookId,
 	})
 	if err != nil {
 		return nil, err

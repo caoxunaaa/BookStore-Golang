@@ -57,6 +57,7 @@ type RedisConfig struct {
 type KafkaConf struct {
 	Host       []string `yaml:"Host"`
 	OrderTopic string   `yaml:"OrderTopic"`
+	OrderGroup string   `yaml:"OrderGroup"`
 }
 
 func ConfigInit(path string) error {

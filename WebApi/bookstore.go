@@ -1,6 +1,7 @@
 package main
 
 import (
+	"WebApi/Apps/order"
 	"WebApi/Router"
 	"WebApi/Services"
 	"WebApi/Svc"
@@ -14,6 +15,8 @@ func main() {
 		return
 	}
 	Svc.SvcContext = Svc.NewContext(Services.C)
+
+	go order.HotSaleHandler()
 
 	r := Router.Init()
 	if err := r.Run(Services.C.Host.ListenOn); err != nil {

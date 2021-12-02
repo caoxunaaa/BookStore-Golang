@@ -12,34 +12,26 @@ message Response {
   bool ok = 1;
   string message = 2;
 }
-
-message OrderGoods{
-  int64 id = 1;
-  string orderNum = 2;
-  int64 bookId = 3;
-  int64 Count = 4;
-}
-
 message OrderInfoReq{
   int64 id = 1;
   int64 buyerId = 2;
   string orderNum = 3;
-  string createTime = 4;
+  string orderTime = 4;
   double cost = 5;
   bool isPaid = 6;
   string orderStatus = 7;
-  repeated OrderGoods goods = 8;
+  int64 bookId = 8;
 }
 
 message OrderInfoResp{
   int64 id = 1;
   int64 buyerId = 2;
   string orderNum = 3;
-  string createTime = 4;
+  string orderTime = 4;
   double cost = 5;
   bool isPaid = 6;
   string orderStatus = 7;
-  repeated OrderGoods goods = 8;
+  int64 bookId = 8;
 }
 
 message OrderInfosResp{
@@ -49,6 +41,7 @@ message OrderInfosResp{
 
 service Order {
   rpc GetOrderInfoByOrderNum(OrderInfoReq) returns (OrderInfoResp);
+  rpc GetNotPaidOrderInfoByBuyerId(OrderInfoReq) returns (OrderInfoResp);
 
   rpc CreateOrderInfo(OrderInfoReq) returns(Response);
   rpc UpdateOrderInfo(OrderInfoReq) returns(Response);

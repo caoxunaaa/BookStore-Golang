@@ -3,6 +3,7 @@ package Router
 import (
 	"WebApi/Apps/action"
 	"WebApi/Apps/book"
+	"WebApi/Apps/order"
 	"WebApi/Apps/user"
 	"WebApi/Middlewares"
 	"github.com/gin-gonic/gin"
@@ -52,6 +53,12 @@ func Init() *gin.Engine {
 			commentGroup.GET("/by-book-content-id", action.GetCommentsByBookContentIdHandler)
 			commentGroup.POST("/", action.CreateCommentHandler)
 		}
+	}
+	orderGroup := r.Group("/order/")
+	{
+		orderGroup.POST("/order-line-up", order.LineUpHandler)
+		orderGroup.POST("/start-order-handle", order.StartOrderHandler)
+		orderGroup.POST("/end-order-handle", order.EndOrderHandler)
 	}
 	return r
 }

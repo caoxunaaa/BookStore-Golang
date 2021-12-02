@@ -26,6 +26,11 @@ func (s *OrderServer) GetOrderInfoByOrderNum(ctx context.Context, in *order.Orde
 	return l.GetOrderInfoByOrderNum(in)
 }
 
+func (s *OrderServer) GetNotPaidOrderInfoByBuyerId(ctx context.Context, in *order.OrderInfoReq) (*order.OrderInfoResp, error) {
+	l := logic.NewGetNotPaidOrderInfoByBuyerIdLogic(ctx, s.svcCtx)
+	return l.GetNotPaidOrderInfoByBuyerId(in)
+}
+
 func (s *OrderServer) CreateOrderInfo(ctx context.Context, in *order.OrderInfoReq) (*order.Response, error) {
 	l := logic.NewCreateOrderInfoLogic(ctx, s.svcCtx)
 	return l.CreateOrderInfo(in)

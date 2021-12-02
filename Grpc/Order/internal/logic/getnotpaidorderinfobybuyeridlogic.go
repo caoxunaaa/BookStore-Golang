@@ -9,26 +9,25 @@ import (
 	"github.com/tal-tech/go-zero/core/logx"
 )
 
-type GetOrderInfoByOrderNumLogic struct {
+type GetNotPaidOrderInfoByBuyerIdLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewGetOrderInfoByOrderNumLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetOrderInfoByOrderNumLogic {
-	return &GetOrderInfoByOrderNumLogic{
+func NewGetNotPaidOrderInfoByBuyerIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetNotPaidOrderInfoByBuyerIdLogic {
+	return &GetNotPaidOrderInfoByBuyerIdLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *GetOrderInfoByOrderNumLogic) GetOrderInfoByOrderNum(in *order.OrderInfoReq) (*order.OrderInfoResp, error) {
-	orderInfo, err := l.svcCtx.OrderInfoModel.FindOneByOrderNum(in.OrderNum)
+func (l *GetNotPaidOrderInfoByBuyerIdLogic) GetNotPaidOrderInfoByBuyerId(in *order.OrderInfoReq) (*order.OrderInfoResp, error) {
+	orderInfo, err := l.svcCtx.OrderInfoModel.FindNotPaidOrdersByBuyerId(in.BuyerId)
 	if err != nil {
 		return nil, err
 	}
-
 	return &order.OrderInfoResp{
 		Id:          orderInfo.Id,
 		BuyerId:     orderInfo.BuyerId,

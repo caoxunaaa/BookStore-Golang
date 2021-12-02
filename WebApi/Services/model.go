@@ -10,7 +10,7 @@ type ModelContext struct {
 	Order *Models.OrderModel
 }
 
-func NewModel(grpc order.OrderClient, conn redis.Conn, kafka *KafkaContext) *ModelContext {
+func NewModel(grpc order.OrderClient, conn *redis.Pool, kafka *KafkaContext) *ModelContext {
 	var m ModelContext
 	m.Order = Models.NewOrderModel(grpc, conn, kafka.Producer, kafka.Consumer)
 	return &m

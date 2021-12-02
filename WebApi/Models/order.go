@@ -3,33 +3,49 @@ package Models
 import (
 	"WebApi/Pb/order"
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/Shopify/sarama"
+	"github.com/go-basic/uuid"
 	"github.com/gomodule/redigo/redis"
+	"math/rand"
 	"strconv"
 	"time"
 )
 
 const (
-	topic = "order"
-	key   = "order"
+	topic                       = "order"
+	key                         = "order"
+	userOrderStatusRedisHashKey = "UserOrderStatus"
 )
 
 type OrderHandle interface {
-	OrderLineUp(key string) (int32, int64, error)                   //排队
-	OrderIsArrive(v string) (bool, error)                           //查询redis是否有下单成功的标志
-	DecrInventory(key int64) (bool, error)                          //验证库存时候足够，足够便减1,在redis中给个成功抢到，等待下单的标志
-	CreateOrder(ctx context.Context, req *order.OrderInfoReq) error //下单处理
-	PayHandle(ctx context.Context, orderNum string) error           //支付处理,模拟支付花费2秒，默认都支付成功
+	GetNotPaidOrder(ctx context.Context, buyerId int64) (*order.OrderInfoResp, error)
+	GetUserStatus(userId string) (int, error)                                     //判断用户状态
+	SetUserStatus(userId string, status int8) error                               //修改用户状态
+	OrderLineUp(user string, v string) (partition int32, offset int64, err error) //排队
+	OrderIsArrive(v string) (*order.OrderInfoReq, error)                          //查询redis是否有下单成功的标志
+	ParseGoods(v string) (*struct {
+		UserId   int64   `json:"user_id"`
+		UserName string  `json:"user_name"`
+		BookId   int64   `json:"book_id"`
+		Cost     float64 `json:"cost"`
+	}, error) //解析json
+	DecrInventory(bookId int64) (bool, error)                  //验证库存时候足够，足够便减1,在redis中给个成功抢到，等待下单的标志
+	CreateOrder(ctx context.Context, v string) (string, error) //下单处理
+	PayHandle(ctx context.Context, orderNum string) error      //支付处理,模拟支付花费2秒，默认都支付成功
+	StartOrderHandle(ctx context.Context, h sarama.ConsumerGroupHandler, ch chan struct{})
 }
 
 type OrderModel struct {
 	OrderGrpc     order.OrderClient
-	CachedConn    redis.Conn
+	CachedConn    *redis.Pool
 	KafkaProducer sarama.SyncProducer
-	KafkaConsumer sarama.Consumer
+	KafkaConsumer sarama.ConsumerGroup
 }
 
-func NewOrderModel(g order.OrderClient, c redis.Conn, kp sarama.SyncProducer, kc sarama.Consumer) *OrderModel {
+func NewOrderModel(g order.OrderClient, c *redis.Pool, kp sarama.SyncProducer, kc sarama.ConsumerGroup) *OrderModel {
 	return &OrderModel{
 		OrderGrpc:     g,
 		CachedConn:    c,
@@ -38,49 +54,137 @@ func NewOrderModel(g order.OrderClient, c redis.Conn, kp sarama.SyncProducer, kc
 	}
 }
 
-func (c *OrderModel) OrderLineUp(v string) (int32, int64, error) {
+func (c *OrderModel) GetNotPaidOrder(ctx context.Context, buyerId int64) (*order.OrderInfoResp, error) {
+	res, err := c.OrderGrpc.GetNotPaidOrderInfoByBuyerId(ctx, &order.OrderInfoReq{
+		BuyerId: buyerId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res, err
+}
+
+func (c *OrderModel) GetUserStatus(userId string) (int, error) {
+	//在redis中进行用户状态的存储，分别为初始：0,排队中：1，待支付：2，已支付：3, 错误：-1
+	ok, err := redis.Bool(c.CachedConn.Get().Do("HEXISTS", userOrderStatusRedisHashKey, userId))
+	if err != nil {
+		return -1, err
+	}
+	if ok {
+		if s, err := redis.Int(c.CachedConn.Get().Do("HGET", userOrderStatusRedisHashKey, userId)); err != nil {
+			return -1, err
+		} else {
+			return s, nil
+		}
+	} else {
+		return 0, nil
+	}
+}
+
+func (c *OrderModel) SetUserStatus(userId string, status int8) error {
+	//在redis中进行用户状态的存储，分别为初始：0,排队中：1，待支付：2，关闭：3, 错误：-1
+	_, err := c.CachedConn.Get().Do("HSET", userOrderStatusRedisHashKey, userId, status)
+	return err
+}
+
+func (c *OrderModel) OrderLineUp(userId string, v string) (partition int32, offset int64, err error) {
+	s, err := c.GetUserStatus(userId)
+	if err != nil {
+		fmt.Println("GetUserStatus", err)
+		return -1, -1, err
+	}
+	if s != 0 {
+		return -1, -1, errors.New("不在准备排队的状态")
+	}
+
+	//送入kafka中
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Key:   sarama.StringEncoder(key),
 		Value: sarama.StringEncoder(v),
 	}
-	if partition, offset, err := c.KafkaProducer.SendMessage(msg); err != nil {
-		return partition, offset, err
-	} else {
+	partition, offset, err = c.KafkaProducer.SendMessage(msg)
+	if err != nil {
 		return partition, offset, err
 	}
+	//在redis中设置user排队中
+	err = c.SetUserStatus(userId, 1)
+
+	return partition, offset, err
 }
 
-func (c *OrderModel) OrderIsArrive(kv string) (bool, error) {
-	ok, err := redis.Bool(c.CachedConn.Do("EXISTS", kv))
+func (c *OrderModel) ParseGoods(v string) (*struct {
+	UserId   int64   `json:"user_id"`
+	UserName string  `json:"user_name"`
+	BookId   int64   `json:"book_id"`
+	Cost     float64 `json:"cost"`
+}, error) {
+	var res = struct {
+		UserId   int64   `json:"user_id"`
+		UserName string  `json:"user_name"`
+		BookId   int64   `json:"book_id"`
+		Cost     float64 `json:"cost"`
+	}{}
+	err := json.Unmarshal([]byte(v), &res)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	if ok {
-		return true, nil
-	} else {
-		return false, nil
-	}
-
+	return &res, nil
 }
 
 func (c *OrderModel) DecrInventory(bookId int64) (bool, error) {
-	inventory, err := redis.Int64(c.CachedConn.Do("DECR", "Inventory:BookId:"+strconv.FormatInt(bookId, 10)))
+	currentInventory, err := redis.Int64(c.CachedConn.Get().Do("GET", "Inventory:BookId:"+strconv.FormatInt(bookId, 10)))
 	if err != nil {
+		fmt.Println("DecrInventoryErr1", err)
 		return false, err
 	}
-	if inventory < 0 {
+	if currentInventory <= 0 {
 		return false, nil
+	}
+	_, err = c.CachedConn.Get().Do("SET", "Inventory:BookId:"+strconv.FormatInt(bookId, 10), currentInventory-1)
+	if err != nil {
+		fmt.Println("DecrInventoryErr2", err)
+		return false, err
 	}
 	return true, nil
 }
 
-func (c *OrderModel) CreateOrder(ctx context.Context, req *order.OrderInfoReq) error {
-	if _, err := c.OrderGrpc.CreateOrderInfo(ctx, req); err != nil {
-		return err
-	} else {
-		return nil
+func (c *OrderModel) OrderIsArrive(v string) (*order.OrderInfoReq, error) {
+	g, err := c.ParseGoods(v)
+	if err != nil {
+		return nil, err
 	}
+	ok, err := c.DecrInventory(g.BookId)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, errors.New("没有库存")
+	} else {
+		return &order.OrderInfoReq{
+			BuyerId:   g.UserId,
+			OrderNum:  uuid.New(),
+			OrderTime: time.Now().Format("2006-01-02 15:04:05"),
+			Cost:      g.Cost,
+			BookId:    g.BookId,
+		}, nil
+	}
+}
+
+func (c *OrderModel) CreateOrder(ctx context.Context, v string) (orderNum string, err error) {
+	req, err := c.OrderIsArrive(v)
+	if err != nil {
+		return "", err
+	}
+	//订单时间随机
+	rand.Seed(time.Now().UnixNano())
+	num := rand.Intn(1000)
+	time.Sleep(time.Millisecond * (time.Duration(num)))
+	_, err = c.OrderGrpc.CreateOrderInfo(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	return req.OrderNum, nil
 }
 
 func (c *OrderModel) PayHandle(ctx context.Context, orderNum string) error {
@@ -98,10 +202,17 @@ func (c *OrderModel) PayHandle(ctx context.Context, orderNum string) error {
 		OrderNum:    orderInfo.OrderNum,
 		Cost:        orderInfo.Cost,
 		IsPaid:      true,
-		OrderStatus: "已支付",
+		OrderStatus: "关闭",
 	})
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (c *OrderModel) StartOrderHandle(ctx context.Context, h sarama.ConsumerGroupHandler, ch chan struct{}) {
+	err := c.KafkaConsumer.Consume(context.Background(), []string{topic}, h)
+	if err != nil {
+		fmt.Println("StartOrderHandle ERR:", err.Error())
+	}
 }

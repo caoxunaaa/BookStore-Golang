@@ -10,14 +10,14 @@ var SvcContext *ServiceContext
 
 type ServiceContext struct {
 	Grpc  *Services.GrpcContext
-	Redis redis.Conn
+	Redis *redis.Pool
 	Model *Services.ModelContext
 	Kafka *Services.KafkaContext
 }
 
 func NewContext(c *Services.Config) *ServiceContext {
 	grpc := Services.GrpcInit(c)
-	conn := Databases.RedisInit(c)
+	conn := Databases.RedisPollInit(c)
 	kafka := Services.NewKafka(c)
 	return &ServiceContext{
 		Grpc:  grpc,

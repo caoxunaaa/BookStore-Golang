@@ -30,6 +30,7 @@ type (
 		FindOneByOrderNum(orderNum string) (*OrderInfo, error)
 		Update(data OrderInfo) error
 		Delete(id int64) error
+		FindNotPaidOrdersByBuyerId(BuyerId int64) (*OrderInfo, error)
 	}
 
 	defaultOrderInfoModel struct {
@@ -41,7 +42,8 @@ type (
 		Id          int64     `db:"id"`
 		BuyerId     int64     `db:"buyer_id"`     // 购买者id
 		OrderNum    string    `db:"order_num"`    // 订单号
-		CreateTime  time.Time `db:"create_time"`  // 订单创建时间
+		OrderTime   time.Time `db:"order_time"`   // 订单创建时间
+		BookId      int64     `db:"bookId"`       // 书籍id
 		Cost        float64   `db:"cost"`         // 费用
 		IsPaid      int64     `db:"is_paid"`      // 是否支付
 		OrderStatus string    `db:"order_status"` // 订单状态：待付款，关闭
@@ -58,8 +60,8 @@ func NewOrderInfoModel(conn sqlx.SqlConn, c cache.CacheConf) OrderInfoModel {
 func (m *defaultOrderInfoModel) Insert(data OrderInfo) (sql.Result, error) {
 	bsOrderOrderInfoOrderNumKey := fmt.Sprintf("%s%v", cacheBsOrderOrderInfoOrderNumPrefix, data.OrderNum)
 	ret, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, orderInfoRowsExpectAutoSet)
-		return conn.Exec(query, data.BuyerId, data.OrderNum, data.Cost, data.IsPaid, data.OrderStatus)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, orderInfoRowsExpectAutoSet)
+		return conn.Exec(query, data.BuyerId, data.OrderNum, data.OrderTime, data.BookId, data.Cost, data.IsPaid, data.OrderStatus)
 	}, bsOrderOrderInfoOrderNumKey)
 	return ret, err
 }
@@ -102,11 +104,11 @@ func (m *defaultOrderInfoModel) FindOneByOrderNum(orderNum string) (*OrderInfo, 
 }
 
 func (m *defaultOrderInfoModel) Update(data OrderInfo) error {
-	bsOrderOrderInfoIdKey := fmt.Sprintf("%s%v", cacheBsOrderOrderInfoIdPrefix, data.Id)
 	bsOrderOrderInfoOrderNumKey := fmt.Sprintf("%s%v", cacheBsOrderOrderInfoOrderNumPrefix, data.OrderNum)
+	bsOrderOrderInfoIdKey := fmt.Sprintf("%s%v", cacheBsOrderOrderInfoIdPrefix, data.Id)
 	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, orderInfoRowsWithPlaceHolder)
-		return conn.Exec(query, data.BuyerId, data.OrderNum, data.Cost, data.IsPaid, data.OrderStatus, data.Id)
+		return conn.Exec(query, data.BuyerId, data.OrderNum, data.OrderTime, data.BookId, data.Cost, data.IsPaid, data.OrderStatus, data.Id)
 	}, bsOrderOrderInfoIdKey, bsOrderOrderInfoOrderNumKey)
 	return err
 }
@@ -117,8 +119,8 @@ func (m *defaultOrderInfoModel) Delete(id int64) error {
 		return err
 	}
 
-	bsOrderOrderInfoIdKey := fmt.Sprintf("%s%v", cacheBsOrderOrderInfoIdPrefix, id)
 	bsOrderOrderInfoOrderNumKey := fmt.Sprintf("%s%v", cacheBsOrderOrderInfoOrderNumPrefix, data.OrderNum)
+	bsOrderOrderInfoIdKey := fmt.Sprintf("%s%v", cacheBsOrderOrderInfoIdPrefix, id)
 	_, err = m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
 		return conn.Exec(query, id)

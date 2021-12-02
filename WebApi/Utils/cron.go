@@ -28,7 +28,7 @@ func init() {
 func TrafficStatisticsImportDB() error {
 	var err error
 	//找到所有redis访问量的内容
-	res, err := redis.StringMap(Svc.SvcContext.Redis.Do("ZRANGE", "traffic_statistic", 0, -1, "WITHSCORES"))
+	res, err := redis.StringMap(Svc.SvcContext.Redis.Get().Do("ZRANGE", "traffic_statistic", 0, -1, "WITHSCORES"))
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func TrafficStatisticsImportDB() error {
 		ts := resp.TrafficStatistics
 		key := "traffic_statistic"
 		for i, _ := range ts {
-			_, err = Svc.SvcContext.Redis.Do("ZADD", key, ts[i].TrafficNumber, strconv.FormatInt(ts[i].BookId, 10)+":"+strconv.FormatInt(ts[i].ChapterNum, 10))
+			_, err = Svc.SvcContext.Redis.Get().Do("ZADD", key, ts[i].TrafficNumber, strconv.FormatInt(ts[i].BookId, 10)+":"+strconv.FormatInt(ts[i].ChapterNum, 10))
 			if err != nil {
 				return err
 			}

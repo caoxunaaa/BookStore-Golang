@@ -15,7 +15,7 @@ func GetTrafficStatisticByBookIdAndChapterNumHandler(c *gin.Context) {
 
 	//找到redis访问量的内容
 	key := "traffic_statistic"
-	res, err := redis.String(Svc.SvcContext.Redis.Do("ZSCORE", key, bookId+":"+chapterNum))
+	res, err := redis.String(Svc.SvcContext.Redis.Get().Do("ZSCORE", key, bookId+":"+chapterNum))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -31,7 +31,7 @@ func GetTrafficStatisticByBookIdAndChapterNumHandler(c *gin.Context) {
 func GetAllTrafficStatisticHandler(c *gin.Context) {
 	//找到redis访问量的内容
 	key := "traffic_statistic"
-	res, err := redis.StringMap(Svc.SvcContext.Redis.Do("ZRANGE", key, 0, -1, "WITHSCORES"))
+	res, err := redis.StringMap(Svc.SvcContext.Redis.Get().Do("ZRANGE", key, 0, -1, "WITHSCORES"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -43,7 +43,7 @@ func GetAllTrafficStatisticHandlerByBookId(c *gin.Context) {
 	//通过书籍ID找到redis访问量的内容
 	bookId := c.Query("bookId")
 	key := "traffic_statistic"
-	res, err := redis.StringMap(Svc.SvcContext.Redis.Do("ZRANGE", key, 0, -1, "WITHSCORES"))
+	res, err := redis.StringMap(Svc.SvcContext.Redis.Get().Do("ZRANGE", key, 0, -1, "WITHSCORES"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

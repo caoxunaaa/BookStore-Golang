@@ -6,6 +6,8 @@ BookRpc:
   Host: 172.20.3.111:8081
 ActionRpc:
   Host: 172.20.3.111:8082
+OrderRpc:
+  Host: 172.20.3.111:8083
 Jwt:
   Secret: Superxon
   Expire: 86400
@@ -20,3 +22,4 @@ Kafka:
     - 172.20.3.13:30902
     - 172.20.3.13:30903
   OrderTopic: Order
+  OrderGroup: Order

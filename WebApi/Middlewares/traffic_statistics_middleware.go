@@ -32,12 +32,12 @@ func TrafficStatisticsMiddleware() func(c *gin.Context) {
 
 //判斷訪問是否在指定時間內重複 true为重复,反之false
 func IsRepeat(key string) (bool, error) {
-	ok, err := redis.Bool(Svc.SvcContext.Redis.Do("EXISTS", key))
+	ok, err := redis.Bool(Svc.SvcContext.Redis.Get().Do("EXISTS", key))
 	if err != nil {
 		return false, err
 	}
 	if !ok {
-		_, err = Svc.SvcContext.Redis.Do("SET", key, []byte{}, "NX", "EX", Expire)
+		_, err = Svc.SvcContext.Redis.Get().Do("SET", key, []byte{}, "NX", "EX", Expire)
 		if err != nil {
 			return false, err
 		}
@@ -58,7 +58,7 @@ func TrafficStatistics(key string) error {
 	key = "traffic_statistic"
 	if len(res) == 2 {
 		member := string(res[0]) + ":" + string(res[1])
-		_, err := Svc.SvcContext.Redis.Do("ZINCRBY", key, 1, member)
+		_, err := Svc.SvcContext.Redis.Get().Do("ZINCRBY", key, 1, member)
 		if err != nil {
 			return err
 		}
