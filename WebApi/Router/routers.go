@@ -59,6 +59,9 @@ func Init() *gin.Engine {
 		orderGroup.POST("/order-line-up", order.LineUpHandler)
 		orderGroup.POST("/start-order-handle", order.StartOrderHandler)
 		orderGroup.POST("/end-order-handle", order.EndOrderHandler)
+		orderGroup.GET("/not-paid-order-info", order.GetNotPaidOrderInfoHandler)
+		orderGroup.POST("/pay-for-order", order.PayHandler)
+		orderGroup.DELETE("/cancel-order", order.CancelOrderHandler)
 	}
 	return r
 }

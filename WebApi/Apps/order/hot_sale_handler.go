@@ -1,6 +1,7 @@
 package order
 
 import (
+	"WebApi/Pb/book"
 	"WebApi/Pb/order"
 	"WebApi/Svc"
 	"context"
@@ -20,21 +21,25 @@ var ALLOCATING = false //允许排队FLAG
 
 func LineUpHandler(c *gin.Context) {
 	buyerId := c.PostForm("buyerId")
-	order := c.PostForm("order") //json {'user_id': '', 'user_name': '', 'book_id': '', 'cost': 100}
-	fmt.Println(buyerId, order)
+	ord := c.PostForm("order") //json {'user_id': '', 'user_name': '', 'book_id': '', 'cost': 100}
+	fmt.Println(buyerId, ord)
 	if ALLOCATING {
-		if _, offset, err := Svc.SvcContext.Model.Order.OrderLineUp(buyerId, order); err != nil {
-			c.JSON(http.StatusNotFound, err)
+		if _, offset, err := Svc.SvcContext.Model.Order.OrderLineUp(buyerId, ord); err != nil {
+			if err.Error() == "已经在排队的状态" {
+				c.JSON(http.StatusOK, gin.H{"code": 2001, "message": err.Error()})
+				return
+			}
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"message": "排在" + strconv.FormatInt(offset, 10) + "位"})
+			c.JSON(http.StatusOK, gin.H{"code": 2000, "message": "排在" + strconv.FormatInt(offset, 10) + "位"})
 		}
 	} else {
-		c.JSON(http.StatusOK, gin.H{"error": "热卖还未开始，不允许排队"})
+		c.JSON(http.StatusOK, gin.H{"code": 2002, "message": "热卖还未开始，不允许排队"})
 	}
 }
 
 func StartOrderHandler(c *gin.Context) {
-	_, _ = Svc.SvcContext.Redis.Get().Do("SET", "Inventory:BookId:4", 10) //假数据
+	_, _ = Svc.SvcContext.Redis.Get().Do("SET", "Inventory:BookId:4", 3) //假数据
 	ALLOCATING = true
 	c.JSON(http.StatusOK, gin.H{"message": "start"})
 }
@@ -55,19 +60,32 @@ func GetNotPaidOrderInfoHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
+	if status, err := Svc.SvcContext.Model.Order.GetUserStatus(c.Query("buyerId")); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	} else {
+		if status == -1 {
+			c.JSON(http.StatusOK, gin.H{"code": 2003, "message": "排队超时，已退出队列"})
+			return
+		}
+	}
 	res, err := Svc.SvcContext.Model.Order.GetNotPaidOrder(context.Background(), buyerId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusOK, gin.H{"code": 2001, "message": "没有查询到未支付订单"})
 		return
 	}
-	timeout, err := redis.Bool(Svc.SvcContext.Model.Order.CachedConn.Get().Do("EXISTS", res.OrderNum))
+	timeIn, err := redis.Bool(Svc.SvcContext.Model.Order.CachedConn.Get().Do("EXISTS", res.OrderNum))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	if timeout {
-		c.JSON(http.StatusOK, res)
+	if timeIn {
+		bookInfo, _ := Svc.SvcContext.Grpc.BookGrpc.FindOneBookById(context.Background(), &book.BookBasicInfoReq{
+			Id: res.BookId,
+		})
+		c.JSON(http.StatusOK, gin.H{"code": 2000, "message": res, "bookName": bookInfo.Name})
 	} else {
+		// timeout
 		// 返还库存1,  并且关闭订单
 		_, err = Svc.SvcContext.Redis.Get().Do("INCR", "Inventory:BookId:"+strconv.Itoa(int(res.BookId)))
 		if err != nil {
@@ -88,25 +106,69 @@ func GetNotPaidOrderInfoHandler(c *gin.Context) {
 			OrderStatus: "关闭",
 			BookId:      res.BookId,
 		})
+		c.JSON(http.StatusOK, gin.H{"code": 2002, "message": "订单超时未处理，已自动关闭"})
+	}
 
-		c.JSON(http.StatusOK, gin.H{"error": "订单已经超时"})
+}
+
+func CancelOrderHandler(c *gin.Context) {
+	bookId := c.PostForm("bookId")
+	buyerId, err := strconv.ParseInt(c.PostForm("buyerId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	res, err := Svc.SvcContext.Model.Order.GetNotPaidOrder(context.Background(), buyerId)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"code": 2001, "message": "没有查询到未支付订单"})
+		return
+	}
+
+	_, err = Svc.SvcContext.Model.Order.OrderGrpc.UpdateOrderInfo(context.Background(), &order.OrderInfoReq{
+		Id:          res.Id,
+		BuyerId:     res.BuyerId,
+		OrderNum:    res.OrderNum,
+		Cost:        res.Cost,
+		IsPaid:      false,
+		OrderStatus: "关闭",
+		BookId:      res.BookId,
+	})
+
+	_, err = Svc.SvcContext.Redis.Get().Do("INCR", "Inventory:BookId:"+bookId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	err = Svc.SvcContext.Model.Order.SetUserStatus(strconv.Itoa(int(res.BuyerId)), 3)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 
 }
 
 func PayHandler(c *gin.Context) {
 	orderNum := c.PostForm("orderNum")
+	buyerId := c.PostForm("buyerId")
 	//假支付，随机成功
 	rand.Seed(time.Now().UnixNano())
 	num := rand.Intn(1000)
+	fmt.Println(orderNum, num)
 	if num < 900 {
 		err := Svc.SvcContext.Model.Order.PayHandle(context.Background(), orderNum)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
+			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "支付成功"})
+		err = Svc.SvcContext.Model.Order.SetUserStatus(buyerId, 3)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"code": 2000, "message": "支付成功"})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"message": "支付失败"})
+		c.JSON(http.StatusOK, gin.H{"code": 2001, "message": "支付失败"})
 	}
 }
 
@@ -123,16 +185,25 @@ func (h msgConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, 
 		sess.MarkMessage(msg, "")
 
 		// 标记，sarama会自动进行提交，默认间隔1秒
+
 		//查询库存，创建订单, 设置订单过期时间, 排队超时，取消排队
 		h.channel <- struct{}{}
-
-		go func(v string) {
-			ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
+		ctx, cancel := context.WithTimeout(context.TODO(), time.Minute*1)
+		go func(ctx context.Context, v string) {
 			defer cancel()
-			for {
+			ticker := time.NewTicker(1 * time.Second)
+			for _ = range ticker.C {
 				select {
 				case <-ctx.Done():
 					fmt.Println("order timeout")
+					g, err := Svc.SvcContext.Model.Order.ParseGoods(v)
+					if err != nil {
+						fmt.Println(err)
+					}
+					err = Svc.SvcContext.Model.Order.SetUserStatus(strconv.FormatInt(g.UserId, 10), -1)
+					if err != nil {
+						fmt.Println(err)
+					}
 					return
 				default:
 					if orderNum, err := Svc.SvcContext.Model.Order.CreateOrder(context.Background(), v); err == nil {
@@ -148,10 +219,8 @@ func (h msgConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, 
 						fmt.Println(err)
 					}
 				}
-				time.Sleep(time.Second * 1)
 			}
-		}(string(msg.Value))
-
+		}(ctx, string(msg.Value))
 	}
 	return nil
 }

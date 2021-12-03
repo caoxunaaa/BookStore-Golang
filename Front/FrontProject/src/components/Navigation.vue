@@ -30,6 +30,9 @@
       <div style="float: right" v-if="logged">
         <el-submenu index="5" style="float: right">
           <template slot="title">{{ nickname }}</template>
+          <el-menu-item v-if="nickname==='书店老板'">
+            <el-button size="small" type="danger" @click="start_hot_sale">开始热卖</el-button>
+          </el-menu-item>
           <el-menu-item>
             <router-link tag="li" :to="{path:'/book/myself'}">我的书籍</router-link>
           </el-menu-item>
@@ -66,6 +69,19 @@ export default {
     this.getUser()
   },
   methods: {
+    start_hot_sale () {
+      let that = this
+      that.$axios({
+        url: '/api/order/start-order-handle',
+        method: 'post'
+      }).then(function (response) {
+        const res = response.data
+        console.log(res)
+        alert('开始热卖')
+      }).catch(function (err) {
+        console.log(err.response)
+      })
+    },
     handleSelect (key, keyPath) {
       this.activeIndex = key
     },

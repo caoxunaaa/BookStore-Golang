@@ -5,7 +5,7 @@ import (
 )
 
 func (m *defaultOrderInfoModel) FindNotPaidOrdersByBuyerId(BuyerId int64) (*OrderInfo, error) {
-	query := fmt.Sprintf("select %s from %s where buyer_id=%d and order_status='待支付'", orderInfoRows, m.table, BuyerId)
+	query := fmt.Sprintf("select %s from %s where buyer_id=%d and is_paid=0 and order_status='待支付'", orderInfoRows, m.table, BuyerId)
 	var resp OrderInfo
 	err := m.CachedConn.QueryRowNoCache(&resp, query)
 	if err != nil {

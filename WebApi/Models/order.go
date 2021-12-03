@@ -65,7 +65,7 @@ func (c *OrderModel) GetNotPaidOrder(ctx context.Context, buyerId int64) (*order
 }
 
 func (c *OrderModel) GetUserStatus(userId string) (int, error) {
-	//在redis中进行用户状态的存储，分别为初始：0,排队中：1，待支付：2，已支付：3, 错误：-1
+	//在redis中进行用户状态的存储，分别为初始：0,排队中：1，待支付：2，已支付or关闭：3, 错误：-1
 	ok, err := redis.Bool(c.CachedConn.Get().Do("HEXISTS", userOrderStatusRedisHashKey, userId))
 	if err != nil {
 		return -1, err
@@ -93,8 +93,20 @@ func (c *OrderModel) OrderLineUp(userId string, v string) (partition int32, offs
 		fmt.Println("GetUserStatus", err)
 		return -1, -1, err
 	}
-	if s != 0 {
-		return -1, -1, errors.New("不在准备排队的状态")
+	fmt.Println(s)
+	switch s {
+	case 0:
+		break
+	case 1:
+		return -1, -1, errors.New("已经在排队的状态")
+	case 2:
+		return -1, -1, errors.New("有未完成的订单")
+	default:
+		err = c.SetUserStatus(userId, 0)
+		if err != nil {
+			return -1, -1, err
+		}
+		return c.OrderLineUp(userId, v)
 	}
 
 	//送入kafka中
@@ -196,11 +208,13 @@ func (c *OrderModel) PayHandle(ctx context.Context, orderNum string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("orderInfo", orderInfo)
 	_, err = c.OrderGrpc.UpdateOrderInfo(ctx, &order.OrderInfoReq{
 		Id:          orderInfo.Id,
 		BuyerId:     orderInfo.BuyerId,
 		OrderNum:    orderInfo.OrderNum,
 		Cost:        orderInfo.Cost,
+		BookId:      orderInfo.BookId,
 		IsPaid:      true,
 		OrderStatus: "关闭",
 	})
