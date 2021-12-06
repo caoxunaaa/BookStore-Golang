@@ -22,7 +22,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="confirmOrderAndPay(order_info.orderNum)">确认订单并支付</el-button>
-          <el-button type="warning" @click="deleteOrder(order_info.buyerId, order_info.bookId)">取消订单</el-button>
+          <el-button type="warning" @click="deleteOrder(order_info.orderNum)">取消订单</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -54,21 +54,23 @@ export default {
     // 定时查询订单情况
     setTimerToGetOrderInfo () {
       let that = this
-      that.timer_to_get_order_info = setInterval(func, 1000)
+      let bookId = this.bookId
+      that.timer_to_get_order_info = setInterval(func, 5000)
       func()
       function func () {
         that.$axios({
           url: '/api/order/not-paid-order-info',
           method: 'get',
           params: {
-            buyerId: localStorage.getItem('UserId')
+            buyerId: localStorage.getItem('UserId'),
+            bookId: bookId
           }
         }).then(function (response) {
           const res = response.data
-          console.log(res)
+          console.log('not-paid-order-info', res)
           if (res.code === 2000) {
             that.need_line_up = false
-            that.stopTimerToGetOrderInfo()
+            // that.stopTimerToGetOrderInfo()
             that.order_info = {
               bookId: res.message.bookId,
               bookName: res.bookName,
@@ -81,17 +83,24 @@ export default {
               orderTime: res.message.orderTime
             }
           } else if (res.code === 2002) {
+            that.need_line_up = true
+          } else if (res.code === 2003) {
             that.need_line_up = false
             alert(res.message)
             that.$router.go(0)
-          } else if (res.code === 2003) {
+          } else if (res.code === 2001) {
             that.need_line_up = false
+            that.stopTimerToGetOrderInfo()
+            alert(res.message)
+            that.$router.go(0)
+          } else {
             alert(res.message)
             that.$router.go(0)
           }
         }).catch(function (error) {
           console.log(error)
-          that.need_line_up = true
+          that.need_line_up = false
+          that.$router.go(0)
         })
       }
     },
@@ -102,7 +111,6 @@ export default {
       let that = this
       let formData = new FormData()
       formData.append('orderNum', orderNum)
-      formData.append('buyerId', localStorage.getItem('UserId'))
       that.$axios({
         method: 'post',
         url: '/api/order/pay-for-order',
@@ -116,13 +124,13 @@ export default {
         }
       }).catch(function (error) {
         console.log(error)
+        alert(error.response.data.message)
       })
     },
-    deleteOrder (buyerId, bookId) {
+    deleteOrder (orderNum) {
       let that = this
       let formData = new FormData()
-      formData.append('buyerId', buyerId)
-      formData.append('bookId', bookId)
+      formData.append('orderNum', orderNum)
       that.$axios({
         url: '/api/order/cancel-order',
         method: 'delete',

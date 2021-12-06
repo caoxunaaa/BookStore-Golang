@@ -40,3 +40,8 @@ func (s *OrderServer) UpdateOrderInfo(ctx context.Context, in *order.OrderInfoRe
 	l := logic.NewUpdateOrderInfoLogic(ctx, s.svcCtx)
 	return l.UpdateOrderInfo(in)
 }
+
+func (s *OrderServer) DeleteOrderInfo(ctx context.Context, in *order.OrderInfoReq) (*order.Response, error) {
+	l := logic.NewDeleteOrderInfoLogic(ctx, s.svcCtx)
+	return l.DeleteOrderInfo(in)
+}

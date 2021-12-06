@@ -24,6 +24,7 @@ type (
 		GetNotPaidOrderInfoByBuyerId(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*OrderInfoResp, error)
 		CreateOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error)
 		UpdateOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error)
+		DeleteOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error)
 	}
 
 	defaultOrder struct {
@@ -55,4 +56,9 @@ func (m *defaultOrder) CreateOrderInfo(ctx context.Context, in *OrderInfoReq, op
 func (m *defaultOrder) UpdateOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error) {
 	client := order.NewOrderClient(m.cli.Conn())
 	return client.UpdateOrderInfo(ctx, in, opts...)
+}
+
+func (m *defaultOrder) DeleteOrderInfo(ctx context.Context, in *OrderInfoReq, opts ...grpc.CallOption) (*Response, error) {
+	client := order.NewOrderClient(m.cli.Conn())
+	return client.DeleteOrderInfo(ctx, in, opts...)
 }

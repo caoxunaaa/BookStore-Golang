@@ -116,7 +116,6 @@ export default {
       let buyBookId = bookId
       let that = this
       let formData = new FormData()
-      formData.append('buyerId', localStorage.getItem('UserId'))
       formData.append('order', JSON.stringify({
         user_id: parseInt(localStorage.getItem('UserId')),
         user_name: localStorage.getItem('Nickname'),
@@ -136,6 +135,9 @@ export default {
           alert('还有未完成的订单')
           that.dialogOrderVisible = true
         } else if (res.code === 2002) {
+          alert(res.message)
+          that.dialogOrderVisible = false
+        } else if (res.code === 2003) {
           alert(res.message)
           that.dialogOrderVisible = false
         }

@@ -2,14 +2,12 @@ package order
 
 import (
 	"WebApi/Pb/book"
-	"WebApi/Pb/order"
 	"WebApi/Svc"
 	"context"
 	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -20,12 +18,36 @@ const MANOEUVRABLE = 100
 var ALLOCATING = false //允许排队FLAG
 
 func LineUpHandler(c *gin.Context) {
-	buyerId := c.PostForm("buyerId")
 	ord := c.PostForm("order") //json {'user_id': '', 'user_name': '', 'book_id': '', 'cost': 100}
-	fmt.Println(buyerId, ord)
+	fmt.Println(ord)
 	if ALLOCATING {
-		if _, offset, err := Svc.SvcContext.Model.Order.OrderLineUp(buyerId, ord); err != nil {
-			if err.Error() == "已经在排队的状态" {
+		orderInfo, err := Svc.SvcContext.Model.Order.ParseOrder(ord)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		ok, err := redis.Bool(Svc.SvcContext.Redis.Get().Do("EXISTS", "Inventory:BookId:"+strconv.FormatInt(orderInfo.BookId, 10)))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		if ok {
+			invertory, err := redis.Int64(Svc.SvcContext.Redis.Get().Do("GET", "Inventory:BookId:"+strconv.FormatInt(orderInfo.BookId, 10)))
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+				return
+			}
+			if invertory <= 0 {
+				c.JSON(http.StatusOK, gin.H{"code": 2003, "message": "没有库存"})
+				return
+			}
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 2003, "message": "没有库存"})
+			return
+		}
+
+		if _, offset, err := Svc.SvcContext.Model.Order.OrderLineUp(ord); err != nil {
+			if err.Error() == "未完成的订单" {
 				c.JSON(http.StatusOK, gin.H{"code": 2001, "message": err.Error()})
 				return
 			}
@@ -60,116 +82,62 @@ func GetNotPaidOrderInfoHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	if status, err := Svc.SvcContext.Model.Order.GetUserStatus(c.Query("buyerId")); err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	} else {
-		if status == -1 {
-			c.JSON(http.StatusOK, gin.H{"code": 2003, "message": "排队超时，已退出队列"})
-			return
-		}
-	}
-	res, err := Svc.SvcContext.Model.Order.GetNotPaidOrder(context.Background(), buyerId)
-	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"code": 2001, "message": "没有查询到未支付订单"})
-		return
-	}
-	timeIn, err := redis.Bool(Svc.SvcContext.Model.Order.CachedConn.Get().Do("EXISTS", res.OrderNum))
+
+	bookId, err := strconv.ParseInt(c.Query("bookId"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
-	}
-	if timeIn {
-		bookInfo, _ := Svc.SvcContext.Grpc.BookGrpc.FindOneBookById(context.Background(), &book.BookBasicInfoReq{
-			Id: res.BookId,
-		})
-		c.JSON(http.StatusOK, gin.H{"code": 2000, "message": res, "bookName": bookInfo.Name})
-	} else {
-		// timeout
-		// 返还库存1,  并且关闭订单
-		_, err = Svc.SvcContext.Redis.Get().Do("INCR", "Inventory:BookId:"+strconv.Itoa(int(res.BookId)))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
-			return
-		}
-		err = Svc.SvcContext.Model.Order.SetUserStatus(strconv.Itoa(int(res.BuyerId)), 3)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
-			return
-		}
-		_, err = Svc.SvcContext.Model.Order.OrderGrpc.UpdateOrderInfo(context.Background(), &order.OrderInfoReq{
-			Id:          res.Id,
-			BuyerId:     res.BuyerId,
-			OrderNum:    res.OrderNum,
-			Cost:        res.Cost,
-			IsPaid:      false,
-			OrderStatus: "关闭",
-			BookId:      res.BookId,
-		})
-		c.JSON(http.StatusOK, gin.H{"code": 2002, "message": "订单超时未处理，已自动关闭"})
 	}
 
+	res, err := Svc.SvcContext.Model.Order.GetNotPaidOrder(context.Background(), buyerId, bookId)
+	if err != nil {
+		if err.Error() == "无状态" {
+			c.JSON(http.StatusOK, gin.H{"code": 2001, "message": "库存不足，排队已超时"})
+			return
+		} else if err.Error() == "排队" {
+			c.JSON(http.StatusOK, gin.H{"code": 2002, "message": err.Error()})
+			return
+		} else if err.Error() == "订单超时未处理" {
+			c.JSON(http.StatusOK, gin.H{"code": 2003, "message": err.Error()})
+			return
+		} else if err.Error() == "redis出错" {
+			c.JSON(http.StatusOK, gin.H{"code": 2005, "message": err.Error()})
+			return
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"code": 1001, "message": err.Error()})
+			return
+		}
+	}
+	bookInfo, err := Svc.SvcContext.Grpc.BookGrpc.FindOneBookById(context.Background(), &book.BookBasicInfoReq{Id: bookId})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 1001, "message": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 2000, "message": res, "bookName": bookInfo.Name})
 }
 
 func CancelOrderHandler(c *gin.Context) {
-	bookId := c.PostForm("bookId")
-	buyerId, err := strconv.ParseInt(c.PostForm("buyerId"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-
-	res, err := Svc.SvcContext.Model.Order.GetNotPaidOrder(context.Background(), buyerId)
+	orderNum := c.PostForm("orderNum")
+	err := Svc.SvcContext.Model.Order.DeleteOrder(context.Background(), orderNum)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"code": 2001, "message": "没有查询到未支付订单"})
 		return
 	}
-
-	_, err = Svc.SvcContext.Model.Order.OrderGrpc.UpdateOrderInfo(context.Background(), &order.OrderInfoReq{
-		Id:          res.Id,
-		BuyerId:     res.BuyerId,
-		OrderNum:    res.OrderNum,
-		Cost:        res.Cost,
-		IsPaid:      false,
-		OrderStatus: "关闭",
-		BookId:      res.BookId,
-	})
-
-	_, err = Svc.SvcContext.Redis.Get().Do("INCR", "Inventory:BookId:"+bookId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-	err = Svc.SvcContext.Model.Order.SetUserStatus(strconv.Itoa(int(res.BuyerId)), 3)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-
 }
 
 func PayHandler(c *gin.Context) {
 	orderNum := c.PostForm("orderNum")
-	buyerId := c.PostForm("buyerId")
 	//假支付，随机成功
-	rand.Seed(time.Now().UnixNano())
-	num := rand.Intn(1000)
-	fmt.Println(orderNum, num)
-	if num < 900 {
-		err := Svc.SvcContext.Model.Order.PayHandle(context.Background(), orderNum)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
+	err := Svc.SvcContext.Model.Order.PayHandle(context.Background(), orderNum)
+	if err != nil {
+		if err.Error() == "支付失败" {
+			c.JSON(http.StatusOK, gin.H{"code": 2001, "message": err.Error()})
 			return
 		}
-		err = Svc.SvcContext.Model.Order.SetUserStatus(buyerId, 3)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"code": 2000, "message": "支付成功"})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"code": 2001, "message": "支付失败"})
+		c.JSON(http.StatusBadRequest, err)
+		return
 	}
+	c.JSON(http.StatusOK, gin.H{"code": 2000, "message": "支付成功"})
 }
 
 type msgConsumerGroupHandler struct {
@@ -196,23 +164,18 @@ func (h msgConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, 
 				select {
 				case <-ctx.Done():
 					fmt.Println("order timeout")
-					g, err := Svc.SvcContext.Model.Order.ParseGoods(v)
+					ord, err := Svc.SvcContext.Model.Order.ParseOrder(v)
 					if err != nil {
 						fmt.Println(err)
 					}
-					err = Svc.SvcContext.Model.Order.SetUserStatus(strconv.FormatInt(g.UserId, 10), -1)
+					err = Svc.SvcContext.Model.Order.SetUserStatus(ord, 0)
 					if err != nil {
 						fmt.Println(err)
 					}
 					return
 				default:
 					if orderNum, err := Svc.SvcContext.Model.Order.CreateOrder(context.Background(), v); err == nil {
-						fmt.Println("Create Order Ok")
-						_, err = Svc.SvcContext.Model.Order.CachedConn.Get().Do("SET", orderNum, 1, "EX", 60*5)
-						if err != nil {
-							fmt.Println(err)
-							return
-						}
+						fmt.Println("Create Order Ok: " + orderNum)
 						<-h.channel
 						return
 					} else {

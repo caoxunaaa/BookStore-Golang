@@ -45,4 +45,6 @@ service Order {
 
   rpc CreateOrderInfo(OrderInfoReq) returns(Response);
   rpc UpdateOrderInfo(OrderInfoReq) returns(Response);
+  rpc DeleteOrderInfo(OrderInfoReq) returns(Response);
+
 }
