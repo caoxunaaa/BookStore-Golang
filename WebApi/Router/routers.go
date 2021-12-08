@@ -11,6 +11,7 @@ import (
 
 func Init() *gin.Engine {
 	r := gin.Default()
+	//pprof.Register(r)
 	//r. Use(Middlewares.Cors())
 	r.Static("/Assets", "./Assets")
 	r.StaticFile("/favicon.ico", "./Assets/favicon.ico")

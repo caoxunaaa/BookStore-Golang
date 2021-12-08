@@ -150,10 +150,6 @@ func (h msgConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, 
 	for msg := range claim.Messages() {
 		fmt.Printf("Message topic:%q partition:%d offset:%d  value:%s\n", msg.Topic, msg.Partition, msg.Offset, string(msg.Value))
 
-		sess.MarkMessage(msg, "")
-
-		// 标记，sarama会自动进行提交，默认间隔1秒
-
 		//查询库存，创建订单, 设置订单过期时间, 排队超时，取消排队
 		h.channel <- struct{}{}
 		ctx, cancel := context.WithTimeout(context.TODO(), time.Minute*1)
@@ -184,6 +180,9 @@ func (h msgConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, 
 				}
 			}
 		}(ctx, string(msg.Value))
+
+		// 标记，sarama会自动进行提交，默认间隔1秒
+		sess.MarkMessage(msg, "")
 	}
 	return nil
 }

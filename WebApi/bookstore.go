@@ -22,5 +22,4 @@ func main() {
 	if err := r.Run(Services.C.Host.ListenOn); err != nil {
 		fmt.Printf("startup service failed, err:%v\n\n", err)
 	}
-
 }

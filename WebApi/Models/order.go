@@ -30,9 +30,9 @@ type OrderHandle interface {
 	GetNotPaidOrder(ctx context.Context, buyerId int64, bookId int64) (*order.OrderInfoResp, error)
 	DeleteOrder(ctx context.Context, orderNum string) error
 
-	DecrInventory(bookId int64) (bool, error) //验证库存时候足够，足够便-1,在redis中给个成功抢到，等待下单的标志
-	IncrInventory(bookId int64) (bool, error) //库存 +1
-	ParseOrder(orderJson string) (*OrderInfo, error)
+	DecrInventory(bookId int64) (bool, error)        //验证库存时候足够，足够便-1,在redis中给个成功抢到，等待下单的标志
+	IncrInventory(bookId int64) (bool, error)        //库存 +1
+	ParseOrder(orderJson string) (*OrderInfo, error) //解析Json
 
 	StartOrderHandle(ctx context.Context, h sarama.ConsumerGroupHandler, ch chan struct{})
 }

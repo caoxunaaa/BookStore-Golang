@@ -28,7 +28,6 @@ func main() {
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		book.RegisterBookServer(grpcServer, srv)
-
 		switch c.Mode {
 		case service.DevMode, service.TestMode:
 			reflection.Register(grpcServer)
