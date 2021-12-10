@@ -1,7 +1,7 @@
 Name: action.rpc
-ListenOn: 0.0.0.0:8082
+ListenOn: 0.0.0.0:8080
 Mysql:
   DataSource: bookstore:bookstore@tcp(172.20.3.12:3306)/bs-action?charset=utf8&parseTime=true
 CacheRedis:
-  - Host: 172.20.3.234:6379
+  - Host: 172.20.3.13:30020
     Type: node

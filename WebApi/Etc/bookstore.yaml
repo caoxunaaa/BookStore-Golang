@@ -14,7 +14,7 @@ Jwt:
 FileStorage:
   Path: /home/book-store/BookStoreProject/WebApi/
 Redis:
-  - Host: 172.20.3.234:6379
+  - Host: 172.20.3.13:30020
     Type: SingleNode
 Kafka:
   Host:
