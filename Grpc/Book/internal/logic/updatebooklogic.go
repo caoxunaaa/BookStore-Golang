@@ -3,7 +3,6 @@ package logic
 import (
 	"Book/model"
 	"context"
-	"database/sql"
 	"time"
 
 	"Book/book"
@@ -12,22 +11,23 @@ import (
 	"github.com/tal-tech/go-zero/core/logx"
 )
 
-type UpdateUserLogic struct {
+type UpdateBookLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewUpdateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateUserLogic {
-	return &UpdateUserLogic{
+func NewUpdateBookLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UpdateBookLogic {
+	return &UpdateBookLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *UpdateUserLogic) UpdateUser(in *book.BookBasicInfoReq) (*book.Reply, error) {
+func (l *UpdateBookLogic) UpdateBook(in *book.BookBasicInfoReq) (*book.Reply, error) {
 	storeTime, err := time.Parse("2006-01-02 15:04:05", in.StorageTime)
+	//fmt.Println(storeTime)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (l *UpdateUserLogic) UpdateUser(in *book.BookBasicInfoReq) (*book.Reply, er
 		Author:        in.Author,
 		Image:         in.Image,
 		StorageUserId: in.StorageUserId,
-		StorageTime:   sql.NullTime{Time: storeTime, Valid: true},
+		StorageTime:   storeTime,
 	})
 	if err != nil {
 		return nil, err

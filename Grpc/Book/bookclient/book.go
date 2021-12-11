@@ -35,7 +35,7 @@ type (
 		FindOneBookById(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*BookBasicInfoReply, error)
 		CreateBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
 		DeleteBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
-		UpdateUser(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
+		UpdateBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error)
 		//   book_content
 		FindAllBookContentsByBookId(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*BookContentsReply, error)
 		FindOneBookContentByBookIdAndChapterNum(ctx context.Context, in *BookContentReq, opts ...grpc.CallOption) (*BookContentReply, error)
@@ -96,9 +96,9 @@ func (m *defaultBook) DeleteBook(ctx context.Context, in *BookBasicInfoReq, opts
 	return client.DeleteBook(ctx, in, opts...)
 }
 
-func (m *defaultBook) UpdateUser(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error) {
+func (m *defaultBook) UpdateBook(ctx context.Context, in *BookBasicInfoReq, opts ...grpc.CallOption) (*Reply, error) {
 	client := book.NewBookClient(m.cli.Conn())
-	return client.UpdateUser(ctx, in, opts...)
+	return client.UpdateBook(ctx, in, opts...)
 }
 
 //   book_content

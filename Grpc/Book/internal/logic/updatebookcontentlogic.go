@@ -3,7 +3,6 @@ package logic
 import (
 	"Book/model"
 	"context"
-	"database/sql"
 	"time"
 
 	"Book/book"
@@ -32,11 +31,11 @@ func (l *UpdateBookContentLogic) UpdateBookContent(in *book.BookContentReq) (*bo
 		return nil, err
 	}
 	err = l.svcCtx.BookContentModel.Update(model.BookContent{
-		BookId:         in.BookId,
-		ChapterNum:     in.ChapterNum,
-		ChapterName:    in.ChapterName,
-		ChapterContent: in.ChapterContent,
-		CreateTime:     sql.NullTime{Time: createTime, Valid: true},
+		BookId:            in.BookId,
+		ChapterNum:        in.ChapterNum,
+		ChapterName:       in.ChapterName,
+		ChapterContent:    in.ChapterContent,
+		CreateContentTime: createTime,
 	})
 	if err != nil {
 		return nil, err

@@ -91,7 +91,7 @@ service Book {
 
   rpc CreateBook(BookBasicInfoReq) returns(Reply);
   rpc DeleteBook(BookBasicInfoReq) returns(Reply);
-  rpc UpdateUser(BookBasicInfoReq) returns(Reply);
+  rpc UpdateBook(BookBasicInfoReq) returns(Reply);
 
   //  book_content
   rpc FindAllBookContentsByBookId(BookContentReq) returns(BookContentsReply);

@@ -3,7 +3,6 @@ package logic
 import (
 	"Book/model"
 	"context"
-	"database/sql"
 	"time"
 
 	"Book/book"
@@ -37,7 +36,7 @@ func (l *CreateBookLogic) CreateBook(in *book.BookBasicInfoReq) (*book.Reply, er
 		Author:        in.Author,
 		Image:         in.Image,
 		StorageUserId: in.StorageUserId,
-		StorageTime:   sql.NullTime{Time: storeTime, Valid: true},
+		StorageTime:   storeTime,
 	})
 	if err != nil {
 		return nil, err

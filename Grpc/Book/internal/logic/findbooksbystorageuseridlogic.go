@@ -38,7 +38,7 @@ func (l *FindBooksByStorageUserIdLogic) FindBooksByStorageUserId(in *book.BookBa
 				Author:        t[i].Author,
 				Image:         t[i].Image,
 				StorageUserId: t[i].StorageUserId,
-				StorageTime:   t[i].StorageTime.Time.Format("2006-01-02 15:04:05"),
+				StorageTime:   t[i].StorageTime.Format("2006-01-02 15:04:05"),
 			})
 		}
 		return res

@@ -35,6 +35,6 @@ func (l *FindOneBookContentByBookIdAndChapterNumLogic) FindOneBookContentByBookI
 		ChapterNum:     rep.ChapterNum,
 		ChapterName:    rep.ChapterName,
 		ChapterContent: rep.ChapterContent,
-		CreateTime:     rep.CreateTime.Time.Format("2006-01-02 15:04:05"),
+		CreateTime:     rep.CreateContentTime.Format("2006-01-02 15:04:05"),
 	}, nil
 }

@@ -65,7 +65,7 @@ export default {
             Id: res[i].id,
             TrafficStatistic: that.traffic_statistic[res[i].id],
             Name: res[i].name,
-            Image: 'http://172.20.3.111:8002/' + res[i].image,
+            Image: 'http://114.115.169.233:8002/' + res[i].image,
             Author: res[i].author,
             Time: res[i].storage_time
           })

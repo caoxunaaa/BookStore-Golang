@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/tal-tech/go-zero/core/stores/cache"
 	"github.com/tal-tech/go-zero/core/stores/sqlc"
@@ -38,12 +39,12 @@ type (
 	}
 
 	BookContent struct {
-		Id             int64        `db:"id"`
-		BookId         int64        `db:"book_id"`         // 书籍的ID，外键
-		ChapterNum     int64        `db:"chapter_num"`     // 章节数
-		ChapterName    string       `db:"chapter_name"`    // 章节名
-		ChapterContent string       `db:"chapter_content"` // 章节内容
-		CreateTime     sql.NullTime `db:"create_time"`     // 创建事件
+		Id                int64     `db:"id"`
+		BookId            int64     `db:"book_id"`             // 书籍的ID，外键
+		ChapterNum        int64     `db:"chapter_num"`         // 章节数
+		ChapterName       string    `db:"chapter_name"`        // 章节名
+		ChapterContent    string    `db:"chapter_content"`     // 章节内容
+		CreateContentTime time.Time `db:"create_content_time"` // 创建事件
 	}
 )
 
@@ -57,8 +58,8 @@ func NewBookContentModel(conn sqlx.SqlConn, c cache.CacheConf) BookContentModel 
 func (m *defaultBookContentModel) Insert(data BookContent) (sql.Result, error) {
 	bsBooksBookContentBookIdChapterNumKey := fmt.Sprintf("%s%v:%v", cacheBsBooksBookContentBookIdChapterNumPrefix, data.BookId, data.ChapterNum)
 	ret, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, bookContentRowsExpectAutoSet)
-		return conn.Exec(query, data.BookId, data.ChapterNum, data.ChapterName, data.ChapterContent)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, bookContentRowsExpectAutoSet)
+		return conn.Exec(query, data.BookId, data.ChapterNum, data.ChapterName, data.ChapterContent, data.CreateContentTime)
 	}, bsBooksBookContentBookIdChapterNumKey)
 	return ret, err
 }
@@ -105,7 +106,7 @@ func (m *defaultBookContentModel) Update(data BookContent) error {
 	bsBooksBookContentBookIdChapterNumKey := fmt.Sprintf("%s%v:%v", cacheBsBooksBookContentBookIdChapterNumPrefix, data.BookId, data.ChapterNum)
 	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, bookContentRowsWithPlaceHolder)
-		return conn.Exec(query, data.BookId, data.ChapterNum, data.ChapterName, data.ChapterContent, data.Id)
+		return conn.Exec(query, data.BookId, data.ChapterNum, data.ChapterName, data.ChapterContent, data.CreateContentTime, data.Id)
 	}, bsBooksBookContentIdKey, bsBooksBookContentBookIdChapterNumKey)
 	return err
 }

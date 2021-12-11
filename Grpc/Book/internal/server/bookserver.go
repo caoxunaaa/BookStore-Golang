@@ -57,9 +57,9 @@ func (s *BookServer) DeleteBook(ctx context.Context, in *book.BookBasicInfoReq) 
 	return l.DeleteBook(in)
 }
 
-func (s *BookServer) UpdateUser(ctx context.Context, in *book.BookBasicInfoReq) (*book.Reply, error) {
-	l := logic.NewUpdateUserLogic(ctx, s.svcCtx)
-	return l.UpdateUser(in)
+func (s *BookServer) UpdateBook(ctx context.Context, in *book.BookBasicInfoReq) (*book.Reply, error) {
+	l := logic.NewUpdateBookLogic(ctx, s.svcCtx)
+	return l.UpdateBook(in)
 }
 
 //   book_content

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/tal-tech/go-zero/core/stores/cache"
 	"github.com/tal-tech/go-zero/core/stores/sqlc"
@@ -39,12 +40,12 @@ type (
 	}
 
 	BookBasicInfo struct {
-		Id            int64        `db:"id"`
-		Name          string       `db:"name"`            // 书籍名称
-		Author        string       `db:"author"`          // 作者
-		Image         string       `db:"image"`           // 书籍图片的路径
-		StorageUserId int64        `db:"storage_user_id"` // 入库人
-		StorageTime   sql.NullTime `db:"storage_time"`    // 入库时间
+		Id            int64     `db:"id"`
+		Name          string    `db:"name"`            // 书籍名称
+		Author        string    `db:"author"`          // 作者
+		Image         string    `db:"image"`           // 书籍图片的路径
+		StorageUserId int64     `db:"storage_user_id"` // 入库人
+		StorageTime   time.Time `db:"storage_time"`    // 入库时间
 	}
 )
 
