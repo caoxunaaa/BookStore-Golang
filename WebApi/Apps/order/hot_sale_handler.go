@@ -61,7 +61,7 @@ func LineUpHandler(c *gin.Context) {
 }
 
 func StartOrderHandler(c *gin.Context) {
-	_, _ = Svc.SvcContext.Redis.Get().Do("SET", "Inventory:BookId:4", 3) //假数据
+	//_, _ = Svc.SvcContext.Redis.Get().Do("SET", "Inventory:BookId:4", 3) //假数据
 	ALLOCATING = true
 	c.JSON(http.StatusOK, gin.H{"message": "start"})
 }

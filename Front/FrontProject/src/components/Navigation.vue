@@ -31,6 +31,7 @@
         <el-submenu index="5" style="float: right">
           <template slot="title">{{ nickname }}</template>
           <el-menu-item v-if="nickname==='书店老板'">
+            <el-button size="small" type="danger" @click="set_500_invertory">给星辰变设置500的库存</el-button>
             <el-button size="small" type="danger" @click="start_hot_sale">开始热卖</el-button>
           </el-menu-item>
           <el-menu-item>
@@ -69,6 +70,23 @@ export default {
     this.getUser()
   },
   methods: {
+    set_500_invertory () {
+      let that = this
+      let formData = new FormData()
+      formData.append('bookId', 11)
+      formData.append('inventory', 500)
+      that.$axios({
+        url: '/api/book/inventory/2',
+        method: 'put',
+        data: formData
+      }).then(function (response) {
+        const res = response.data
+        console.log(res)
+        alert('(做测试用)给星辰变设置500的库存')
+      }).catch(function (err) {
+        console.log(err.response)
+      })
+    },
     start_hot_sale () {
       let that = this
       that.$axios({

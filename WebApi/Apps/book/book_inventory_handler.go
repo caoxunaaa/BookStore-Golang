@@ -41,6 +41,11 @@ func CreateBookInventoryHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	_, err = Svc.SvcContext.Redis.Get().Do("SET", "Inventory:BookId:"+strconv.FormatInt(bookId, 10), inventory)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, res)
 }
 
